@@ -1,0 +1,50 @@
+{
+  "title": "Friday Night Meopardy",
+  "categories": [
+    {
+      "name": "Because Seven, Eight, Nine",
+      "cells": [
+        { "points": 50, "prompt": "The number of days in a week.", "answer": "Seven", "hint": "Mon through Sun" },
+        { "points": 100, "prompt": "The number of legs on a spider.", "answer": "Eight", "hint": "Arachnid" },
+        { "points": 150, "prompt": "The number of innings in a standard baseball game.", "answer": "Nine", "hint": "Play ball" },
+        { "points": 200, "prompt": "The only number spelled with letters in alphabetical order.", "answer": "Forty", "hint": "F-O-R-T-Y" }
+      ]
+    },
+    {
+      "name": "From A to Z",
+      "cells": [
+        { "points": 50, "prompt": "The first letter of the alphabet.", "answer": "A", "hint": "Apple" },
+        { "points": 100, "prompt": "The last letter of the English alphabet.", "answer": "Z", "hint": "Zebra" },
+        { "points": 150, "prompt": "The only letter that doesn't appear in any U.S. state name.", "answer": "Q", "hint": "Quiet" },
+        { "points": 200, "prompt": "The most commonly used letter in English.", "answer": "E", "hint": "Everywhere" }
+      ]
+    },
+    {
+      "name": "Test Tubes",
+      "cells": [
+        { "points": 50, "prompt": "The chemical symbol for water.", "answer": "H2O", "hint": "Two hydrogen, one oxygen" },
+        { "points": 100, "prompt": "The gas plants absorb for photosynthesis.", "answer": "Carbon dioxide", "hint": "CO2" },
+        { "points": 150, "prompt": "The powerhouse of the cell.", "answer": "The mitochondria", "hint": "You knew this one" },
+        { "points": 200, "prompt": "The lightest element on the periodic table.", "answer": "Hydrogen", "hint": "Atomic number 1" }
+      ]
+    },
+    {
+      "name": "Hi-Story!",
+      "cells": [
+        { "points": 50, "prompt": "The first President of the United States.", "answer": "George Washington", "hint": "On the one-dollar bill" },
+        { "points": 100, "prompt": "This wall fell in 1989, reuniting a divided city.", "answer": "The Berlin Wall", "hint": "Germany" },
+        { "points": 150, "prompt": "The ship that sank on its maiden voyage in 1912.", "answer": "The Titanic", "hint": "Iceberg, right ahead" },
+        { "points": 200, "prompt": "The ancient wonder still standing in Giza.", "answer": "The Great Pyramid", "hint": "Egypt" }
+      ]
+    },
+    {
+      "name": "Map Attack",
+      "cells": [
+        { "points": 50, "prompt": "The largest ocean on Earth.", "answer": "The Pacific Ocean", "hint": "Peaceful" },
+        { "points": 100, "prompt": "The capital of Japan.", "answer": "Tokyo", "hint": "Formerly Edo" },
+        { "points": 150, "prompt": "The longest river in the world.", "answer": "The Nile", "hint": "Africa" },
+        { "points": 200, "prompt": "The only country that is also a continent.", "answer": "Australia", "hint": "Down under" }
+      ]
+    }
+  ]
+}

@@ -141,3 +141,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Meopardy compiled binary
+/meopardy
+
+# Playwright e2e artifacts
+web/test-results/
+web/playwright-report/
+web/blob-report/
+web/playwright/.cache/
