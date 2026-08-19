@@ -7,50 +7,50 @@
       "name": "Riddle Me This",
       "description": "Classic riddles",
       "cells": [
-        { "points": 50, "prompt": "C1 · 50 — question here", "answer": "C1 · 50 — answer", "hint": "optional hint" },
-        { "points": 100, "prompt": "C1 · 100 — question here", "answer": "C1 · 100 — answer", "hint": "optional hint" },
-        { "points": 150, "prompt": "C1 · 150 — question here", "answer": "C1 · 150 — answer", "hint": "optional hint" },
-        { "points": 200, "prompt": "C1 · 200 — question here", "answer": "C1 · 200 — answer", "hint": "optional hint" }
+        { "points": 50, "prompt": "What has 13 hearts, but no lungs or brain?", "answer": "A deck of cards", "hint": "It may even have that many diamonds" },
+        { "points": 100, "prompt": "I have many keys, but I can't open a single lock. What am I?", "answer": "Piano / Keyboard" },
+        { "points": 150, "prompt": "I'm easy to lift but hard to throw, what am I?", "answer": "Feather", "hint": "1kg of iron or 1kg of..." },
+        { "points": 200, "prompt": "What month in the year has 28 days?", "answer": "All of 'em" }
       ]
     },
     {
       "name": "Tricked Ya!",
       "description": "Questions that will seem like you will know the answer, but it will be slightly off",
       "cells": [
-        { "points": 50, "prompt": "C2 · 50 — question here", "answer": "C2 · 50 — answer", "hint": "optional hint" },
-        { "points": 100, "prompt": "C2 · 100 — question here", "answer": "C2 · 100 — answer", "hint": "optional hint" },
-        { "points": 150, "prompt": "C2 · 150 — question here", "answer": "C2 · 150 — answer", "hint": "optional hint" },
-        { "points": 200, "prompt": "C2 · 200 — question here", "answer": "C2 · 200 — answer", "hint": "optional hint" }
+        { "points": 50, "prompt": "If you are running a race and you pass the person in second place, what place are you in?", "answer": "Second place" },
+        { "points": 100, "prompt": "When does Oktoberfest start in Germany?", "answer": "September", "hint": "Clearly not in October, maybe earlier?" },
+        { "points": 150, "prompt": "The Panama hat originated in which country?", "answer": "Ecuador", "hint": "South America, named after the equator" },
+        { "points": 200, "prompt": "What is the hottest planet in our solar system?", "answer": "Venus", "hint": "sounds like it should be Mercury (430 °C), but Venus has the greenhouse gas effect – 464 °C" }
       ]
     },
     {
       "name": "Pun-chline",
       "description": "Puns & double meanings",
       "cells": [
-        { "points": 50, "prompt": "C3 · 50 — question here", "answer": "C3 · 50 — answer", "hint": "optional hint" },
-        { "points": 100, "prompt": "C3 · 100 — question here", "answer": "C3 · 100 — answer", "hint": "optional hint" },
-        { "points": 150, "prompt": "C3 · 150 — question here", "answer": "C3 · 150 — answer", "hint": "optional hint" },
-        { "points": 200, "prompt": "C3 · 200 — question here", "answer": "C3 · 200 — answer", "hint": "optional hint" }
+        { "points": 50, "prompt": "I want to be a doctor but I don't have enough...", "answer": "Patience (Patients)" },
+        { "points": 100, "prompt": "How did the picture end up in jail? It was...", "answer": "Framed", "hint": "falsely accused" },
+        { "points": 150, "prompt": "I made a pun about the wind, but it...", "answer": "Blows" },
+        { "points": 200, "prompt": "How do you organize an outer-space themed party, you...", "answer": "Plan it (Planet)" }
       ]
     },
     {
       "name": "History Bluff",
       "description": "Common history misconceptions",
       "cells": [
-        { "points": 50, "prompt": "C4 · 50 — question here", "answer": "C4 · 50 — answer", "hint": "optional hint" },
-        { "points": 100, "prompt": "C4 · 100 — question here", "answer": "C4 · 100 — answer", "hint": "optional hint" },
-        { "points": 150, "prompt": "C4 · 150 — question here", "answer": "C4 · 150 — answer", "hint": "optional hint" },
-        { "points": 200, "prompt": "C4 · 200 — question here", "answer": "C4 · 200 — answer", "hint": "optional hint" }
+        { "points": 50, "prompt": "In popular culture, the phrase \"let them eat cake\" is incorrectly attributed to this French queen", "answer": "Marie Antoinette", "hint": "it is also a type of Doll, and the name rhymes with Net" },
+        { "points": 100, "prompt": "Cleopatra was not Egyptian, she was...", "answer": "Greek", "hint": "a pantheon of gods had her back" },
+        { "points": 150, "prompt": "The hundred year war which lasted for 116 years, was fought between England and...", "answer": "France", "hint": "colonizers" },
+        { "points": 200, "prompt": "Despite their deceptive name, what country claims to have invented the \"French fry\"?", "answer": "Belgium", "hint": "Today they are world-famous for their premium chocolates, but they don't actually grow a single native cacao pod" }
       ]
     },
     {
       "name": "Making a Connection",
-      "description": "New-york Times Connections TRI(Cycle, Pod, Angle)",
+      "description": "New York Times Connections TRI(Cycle, Pod, Angle)",
       "cells": [
-        { "points": 50, "prompt": "C5 · 50 — question here", "answer": "C5 · 50 — answer", "hint": "optional hint" },
-        { "points": 100, "prompt": "C5 · 100 — question here", "answer": "C5 · 100 — answer", "hint": "optional hint" },
-        { "points": 150, "prompt": "C5 · 150 — question here", "answer": "C5 · 150 — answer", "hint": "optional hint" },
-        { "points": 200, "prompt": "C5 · 200 — question here", "answer": "C5 · 200 — answer", "hint": "optional hint" }
+        { "points": 50, "prompt": "What do these three words have in common: DIAL, FLOWER, ROOM", "answer": "SUN", "hint": "not a girl offspring" },
+        { "points": 100, "prompt": "What do these three words have in common: GOWN, STAND, CLUB", "answer": "NIGHT", "hint": "it's dark outside" },
+        { "points": 150, "prompt": "What do these three words have in common: KNIFE, FLY, CUP", "answer": "BUTTER", "hint": "one of the words will be a flower" },
+        { "points": 200, "prompt": "What do these three words have in common: FIELD, CRY, LAW", "answer": "OUT", "hint": "it's not inside" }
       ]
     }
   ]
