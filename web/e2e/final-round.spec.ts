@@ -31,13 +31,18 @@ test.describe("final round", () => {
     // The answer never reaches the big screen.
     await expect(screen.getByText("Final one answer")).toHaveCount(0);
 
-    // Start the timer -> a countdown appears on the big screen.
+    // Start the timer -> a countdown appears on both screens as a sane m:ss
+    // (regression guard: a missing serverNow rendered a giant number).
     await mod.getByRole("button", { name: /Start timer/ }).click();
-    await expect(screen.locator(".final-timer")).toBeVisible();
+    await expect(screen.locator(".final-timer")).toHaveText(/^0:\d\d$/);
+    await expect(mod.locator(".final-timer-mod")).toHaveText(/^0:\d\d$/);
 
-    // Mark two players correct (toggle).
+    // Mark two players correct (toggle); the moderator score updates live.
     await mod.getByRole("button", { name: "Ada", exact: true }).click();
     await expect(mod.getByRole("button", { name: "✓ Ada" })).toBeVisible();
+    await expect(
+      mod.locator(".score-chip").filter({ hasText: "Ada" }).locator(".score-value"),
+    ).toHaveText("150");
     await mod.getByRole("button", { name: "Bo", exact: true }).click();
 
     // Next question.

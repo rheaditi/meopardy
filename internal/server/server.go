@@ -416,7 +416,9 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, s.hub.snapshot())
+	// Return the wire format (with serverNow) so an optimistic client update
+	// carries the server clock and the timer countdown stays correct.
+	writeJSON(w, http.StatusOK, toWire(s.hub.snapshot()))
 }
 
 func (s *Server) validCell(category, row int) bool {

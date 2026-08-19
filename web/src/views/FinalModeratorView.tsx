@@ -46,6 +46,17 @@ export function FinalModeratorView({ game, state, run }: FinalModeratorViewProps
         </div>
       </div>
 
+      {players.length > 0 && (
+        <div className="scores">
+          {players.map((p) => (
+            <div className="score-chip" key={p}>
+              <span className="score-name">{p}</span>
+              <span className="score-value">{state?.scores?.[p] ?? 0}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="final-mod">
         <div className="field prompt">
           <div className="field-label">Question {idx + 1} (read aloud)</div>
