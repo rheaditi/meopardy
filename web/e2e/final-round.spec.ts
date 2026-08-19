@@ -13,8 +13,6 @@ test.describe("final round", () => {
     const modCtx = await browser.newContext();
     const screen = await screenCtx.newPage();
     const mod = await modCtx.newPage();
-    // The moderator uses confirm() for Start / Back — auto-accept.
-    mod.on("dialog", (d) => d.accept());
 
     await screen.goto("/?transport=ws");
     await mod.goto("/moderator?transport=ws");

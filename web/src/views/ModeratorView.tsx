@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Game, GameState } from "../types";
 import { cellKey, doneSet } from "../types";
 import { postAction } from "../api";
@@ -33,6 +34,7 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
   }
 
   const run = (p: Promise<GameState>) => p.then(apply).catch(report);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   // In the final phase the moderator drives the final round instead of the board.
   if (state?.phase === "final" && game.finalRound) {
@@ -45,12 +47,7 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
         <span>Live — the big screen mirrors this board in real time.</span>
         <div className="notice-actions">
           {game.finalRound && (
-            <button
-              className="notice-btn"
-              onClick={() => {
-                if (confirm("Start the Final Beopardy round?")) run(postAction("startFinal"));
-              }}
-            >
+            <button className="notice-btn" onClick={() => run(postAction("startFinal"))}>
               Start Final Beopardy →
             </button>
           )}
@@ -66,12 +63,16 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
           <button
             className="notice-btn"
             onClick={() => {
-              if (confirm("Reset the whole board and all scores?")) {
+              if (confirmReset) {
                 run(postAction("reset"));
+                setConfirmReset(false);
+              } else {
+                setConfirmReset(true);
+                setTimeout(() => setConfirmReset(false), 3000);
               }
             }}
           >
-            Reset
+            {confirmReset ? "Confirm reset?" : "Reset"}
           </button>
         </div>
       </div>

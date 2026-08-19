@@ -40,12 +40,7 @@ export function FinalModeratorView({ game, state, run }: FinalModeratorViewProps
           <button className="notice-btn" onClick={() => run(postAction("undo"))}>
             Undo
           </button>
-          <button
-            className="notice-btn"
-            onClick={() => {
-              if (confirm("Return to the main board? Scores are kept.")) run(postAction("showBoard"));
-            }}
-          >
+          <button className="notice-btn" onClick={() => run(postAction("showBoard"))}>
             Back to board
           </button>
         </div>
