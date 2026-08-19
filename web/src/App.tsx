@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Game } from "./types";
 import { fetchGame } from "./api";
 import { useTheme } from "./useTheme";
+import { useTransport } from "./useTransport";
 import { PublicView } from "./views/PublicView";
 import { ModeratorView } from "./views/ModeratorView";
 
@@ -13,6 +14,7 @@ function isModerator(): boolean {
 
 export function App() {
   const [theme, toggleTheme] = useTheme();
+  const [transport, toggleTransport] = useTransport();
   const [game, setGame] = useState<Game | null>(null);
   const [error, setError] = useState<string | null>(null);
   const moderator = isModerator();
@@ -31,6 +33,18 @@ export function App() {
           <span className="role">{moderator ? "Moderator" : "Big screen"}</span>
           <button
             className="icon-btn"
+            onClick={toggleTransport}
+            aria-label="Switch live-update transport"
+            title={
+              transport === "ws"
+                ? "Live updates over WebSocket — click to use polling"
+                : "Live updates by polling — click to use WebSocket"
+            }
+          >
+            {transport === "ws" ? "⚡ WebSocket" : "↻ Polling"}
+          </button>
+          <button
+            className="icon-btn"
             onClick={toggleTheme}
             aria-label="Toggle dark mode"
             title="Toggle dark mode"
@@ -42,7 +56,13 @@ export function App() {
 
       {error && <div className="center-msg error">Couldn't load the game: {error}</div>}
       {!error && !game && <div className="center-msg">Loading the board…</div>}
-      {!error && game && (moderator ? <ModeratorView game={game} /> : <PublicView game={game} />)}
+      {!error &&
+        game &&
+        (moderator ? (
+          <ModeratorView game={game} transport={transport} />
+        ) : (
+          <PublicView game={game} transport={transport} />
+        ))}
     </div>
   );
 }

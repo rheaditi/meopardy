@@ -4,17 +4,19 @@ import { postAction } from "../api";
 import { Board } from "../components/Board";
 import { CellModal } from "../components/CellModal";
 import { useGameState } from "../useGameState";
+import type { Transport } from "../useTransport";
 
 interface ModeratorViewProps {
   game: Game;
+  transport: Transport;
 }
 
 // ModeratorView is the control surface (the iPad). It reads the same live server
 // state as the big screen, so the two are always in sync, and it drives the game
 // by posting actions. Opening a cell highlights it on the big screen and reveals
 // the answer here; closing it marks it answered everywhere.
-export function ModeratorView({ game }: ModeratorViewProps) {
-  const { state, apply } = useGameState();
+export function ModeratorView({ game, transport }: ModeratorViewProps) {
+  const { state, apply } = useGameState(transport);
   const done = doneSet(state);
   const open = state?.openCell ?? null;
   const openCell = open ? game.categories[open.category]?.cells[open.row] : null;

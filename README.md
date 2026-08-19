@@ -14,11 +14,18 @@ Two surfaces:
 Players buzz in offline (a bell, a shout, hands up) — the moderator just picks
 who won or lost each cell.
 
-The two screens stay in sync: game state lives on the server, and every screen
-polls it about once a second, so opening or closing a cell on the moderator
-shows up on the big screen a moment later, with no reload. Polling (rather than
-a persistent connection) is deliberate — it's the robust choice on smart-TV
-browsers, which often buffer or drop long-lived connections.
+The two screens stay in sync: game state lives on the server, shared across
+every screen, so opening or closing a cell on the moderator shows up on the big
+screen with no reload. Each screen chooses how it receives updates, via a toggle
+in the top bar (or a `?transport=ws|poll` URL param):
+
+- **Polling** (default) — GET `/api/state` about once a second. The robust
+  choice on smart-TV browsers, which can mishandle long-lived connections.
+- **WebSocket** — instant server push over `/api/ws`. Snappier where the
+  browser is known-good.
+
+The server pushes over the WebSocket only to screens that are actually
+connected; screens that poll just pull. No client connected means no work.
 
 ## Run it
 
@@ -92,10 +99,9 @@ classic "answer in the form of a question" framing is optional). See
 
 - [x] **Phase 1 — Skeleton**: Go server, Vite/React UI, JSON loader, board in
       both views, dark mode.
-- [x] **Phase 2 — Live sync**: server-authoritative game state that every screen
-      polls (~1.5s), so the big screen mirrors the moderator (open/close a cell,
-      reset the board). Polling chosen over a persistent connection for smart-TV
-      browser robustness.
+- [x] **Phase 2 — Live sync**: server-authoritative game state shared across
+      screens (open/close a cell, reset the board), with a switchable transport —
+      polling (default, TV-safe) or WebSocket (instant) — chosen per screen.
 - [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
       shared passkey.
 - [ ] **Phase 3 — Game loop**: reveal prompt on the big screen, award/deduct per
