@@ -10,7 +10,6 @@ test.describe("big screen", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: "Friday Night Meopardy" })).toBeVisible();
-    await expect(page.getByText("Big screen")).toBeVisible();
 
     // Five categories from the sample game.
     await expect(page.getByText("HI-STORY!")).toBeVisible();

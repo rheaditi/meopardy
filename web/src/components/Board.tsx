@@ -7,6 +7,9 @@ interface BoardProps {
   done: Set<string>;
   // The cell currently in play, highlighted on every screen. Null when none.
   activeKey?: string | null;
+  // Fill mode stretches the board to fill its container (rows share the height)
+  // instead of sizing cells by a fixed aspect ratio. Used by the big screen.
+  fill?: boolean;
   // When set, cells are clickable buttons (moderator). Omit for the read-only
   // public view.
   onCellClick?: (categoryIndex: number, rowIndex: number) => void;
@@ -15,16 +18,20 @@ interface BoardProps {
 // Board renders the category headers and the grid of point cells. Answered
 // ("done") cells are greyed out. Layout adapts to the number of categories and
 // the tallest column.
-export function Board({ game, done, activeKey, onCellClick }: BoardProps) {
+export function Board({ game, done, activeKey, fill, onCellClick }: BoardProps) {
   const cols = game.categories.length;
   const rows = Math.max(...game.categories.map((c) => c.cells.length));
   const interactive = Boolean(onCellClick);
 
+  const style = {
+    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+    // In fill mode the header row sizes to content and the point rows share the
+    // remaining height equally, so the board fills its container.
+    ...(fill ? { gridTemplateRows: `auto repeat(${rows}, minmax(0, 1fr))` } : {}),
+  };
+
   return (
-    <div
-      className="board"
-      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-    >
+    <div className={`board${fill ? " board-fill" : ""}`} style={style}>
       {game.categories.map((cat, ci) => (
         <div className="cat-head" key={`h-${ci}`}>
           {cat.name}

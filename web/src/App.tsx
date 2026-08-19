@@ -25,34 +25,38 @@ export function App() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <div>
-          <h1>{game?.title ?? "Meopardy"}</h1>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span className="role">{moderator ? "Moderator" : "Big screen"}</span>
-          <button
-            className="icon-btn"
-            onClick={toggleTransport}
-            aria-label="Switch live-update transport"
-            title={
-              transport === "ws"
-                ? "Live updates over WebSocket — click to use polling"
-                : "Live updates by polling — click to use WebSocket"
-            }
-          >
-            {transport === "ws" ? "⚡ WebSocket" : "↻ Polling"}
-          </button>
-          <button
-            className="icon-btn"
-            onClick={toggleTheme}
-            aria-label="Toggle dark mode"
-            title="Toggle dark mode"
-          >
-            {theme === "dark" ? "☀ Light" : "☾ Dark"}
-          </button>
-        </div>
-      </header>
+      {/* The big screen has no top bar (TVs clip it via overscan); it floats
+          its own controls. The moderator keeps the top bar. */}
+      {moderator && (
+        <header className="topbar">
+          <div>
+            <h1>{game?.title ?? "Meopardy"}</h1>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span className="role">Moderator</span>
+            <button
+              className="icon-btn"
+              onClick={toggleTransport}
+              aria-label="Switch live-update transport"
+              title={
+                transport === "ws"
+                  ? "Live updates over WebSocket — click to use polling"
+                  : "Live updates by polling — click to use WebSocket"
+              }
+            >
+              {transport === "ws" ? "⚡ WebSocket" : "↻ Polling"}
+            </button>
+            <button
+              className="icon-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              title="Toggle dark mode"
+            >
+              {theme === "dark" ? "☀ Light" : "☾ Dark"}
+            </button>
+          </div>
+        </header>
+      )}
 
       {error && <div className="center-msg error">Couldn't load the game: {error}</div>}
       {!error && !game && <div className="center-msg">Loading the board…</div>}
@@ -61,7 +65,13 @@ export function App() {
         (moderator ? (
           <ModeratorView game={game} transport={transport} />
         ) : (
-          <PublicView game={game} transport={transport} />
+          <PublicView
+            game={game}
+            transport={transport}
+            theme={theme}
+            onToggleTransport={toggleTransport}
+            onToggleTheme={toggleTheme}
+          />
         ))}
     </div>
   );
