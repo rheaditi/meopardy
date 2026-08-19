@@ -74,6 +74,10 @@ cd web && npx playwright install chromium   # once
 make test
 ```
 
+The tests run the server against a dedicated fixture
+([`web/e2e/fixtures/game.json`](web/e2e/fixtures/game.json)) rather than the
+real `games/` files, so editing a game never breaks the suite.
+
 ## Game files
 
 A game is a JSON file describing the board. Columns are categories; each cell

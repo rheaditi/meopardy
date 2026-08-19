@@ -1,0 +1,27 @@
+{
+  "title": "Test Board",
+  "players": ["Ada", "Bo", "Cy"],
+  "categories": [
+    {
+      "name": "Alpha",
+      "cells": [
+        { "points": 100, "prompt": "Alpha one prompt", "answer": "Alpha one answer" },
+        { "points": 200, "prompt": "Alpha two prompt", "answer": "Alpha two answer" }
+      ]
+    },
+    {
+      "name": "Beta",
+      "cells": [
+        { "points": 300, "prompt": "Beta one prompt", "answer": "Beta one answer", "hint": "Beta one hint" },
+        { "points": 400, "prompt": "Beta two prompt", "answer": "Beta two answer" }
+      ]
+    },
+    {
+      "name": "Gamma",
+      "cells": [
+        { "points": 500, "prompt": "Gamma one prompt", "answer": "Gamma one answer" },
+        { "points": 600, "prompt": "Gamma two prompt", "answer": "Gamma two answer" }
+      ]
+    }
+  ]
+}

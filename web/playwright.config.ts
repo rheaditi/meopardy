@@ -18,7 +18,9 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "npm run build && cd .. && go run . -addr :8080",
+    // Serve a dedicated test fixture, not the real games/ files, so the suite
+    // is independent of actual game content.
+    command: "npm run build && cd .. && go run . -addr :8080 -game web/e2e/fixtures/game.json",
     url: "http://localhost:8080/api/health",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
