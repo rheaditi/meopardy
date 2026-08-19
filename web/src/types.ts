@@ -13,10 +13,24 @@ export interface Category {
   cells: Cell[];
 }
 
+export interface FinalQuestion {
+  prompt: string;
+  answer: string;
+  hint?: string;
+  image?: string;
+}
+
+export interface FinalRound {
+  points: number;
+  timerSeconds: number;
+  questions: FinalQuestion[];
+}
+
 export interface Game {
   title: string;
   players?: string[];
   categories: Category[];
+  finalRound?: FinalRound;
 }
 
 // A stable key for one cell on the board, used to track which cells are done.
@@ -39,6 +53,13 @@ export interface GameState {
   revealed: boolean;
   scores: Record<string, number>;
   showFinale: boolean;
+  // Final round
+  phase: string; // "board" | "final"
+  finalIndex: number;
+  finalRevealed: boolean;
+  finalAwarded: Record<string, boolean>;
+  timerEndsAt: number; // server unix ms; 0 = no timer
+  serverNow?: number; // server clock at send time, for skew-free countdown
 }
 
 // doneSet converts the wire format into a Set of "category:row" keys.

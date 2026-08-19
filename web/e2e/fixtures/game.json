@@ -24,5 +24,13 @@
         { "points": 600, "prompt": "Gamma two prompt", "answer": "Gamma two answer" }
       ]
     }
-  ]
+  ],
+  "finalRound": {
+    "points": 150,
+    "timerSeconds": 30,
+    "questions": [
+      { "prompt": "Final one prompt", "answer": "Final one answer", "image": "/assets/rebus-1.png" },
+      { "prompt": "Final two prompt", "answer": "Final two answer" }
+    ]
+  }
 }

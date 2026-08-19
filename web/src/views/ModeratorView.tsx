@@ -3,6 +3,7 @@ import { cellKey, doneSet } from "../types";
 import { postAction } from "../api";
 import { Board } from "../components/Board";
 import { CellModal } from "../components/CellModal";
+import { FinalModeratorView } from "./FinalModeratorView";
 import { useGameState } from "../useGameState";
 import type { Transport } from "../useTransport";
 
@@ -33,11 +34,26 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
 
   const run = (p: Promise<GameState>) => p.then(apply).catch(report);
 
+  // In the final phase the moderator drives the final round instead of the board.
+  if (state?.phase === "final" && game.finalRound) {
+    return <FinalModeratorView game={game} state={state} run={run} />;
+  }
+
   return (
     <>
       <div className="notice">
         <span>Live — the big screen mirrors this board in real time.</span>
         <div className="notice-actions">
+          {game.finalRound && (
+            <button
+              className="notice-btn"
+              onClick={() => {
+                if (confirm("Start the Final Beopardy round?")) run(postAction("startFinal"));
+              }}
+            >
+              Start Final Beopardy →
+            </button>
+          )}
           <button
             className="notice-btn"
             onClick={() => run(postAction(state?.showFinale ? "hideFinale" : "finale"))}

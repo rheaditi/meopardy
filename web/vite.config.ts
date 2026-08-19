@@ -8,6 +8,9 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    // Bundle under /static so the /assets/ URL is free for game image assets
+    // served by the Go server from disk.
+    assetsDir: "static",
   },
   server: {
     proxy: {

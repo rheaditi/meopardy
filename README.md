@@ -143,6 +143,39 @@ Add an optional `"passkey": "your-secret"` to require it on the moderator view
 light gate for casual play, not real security, and it's kept server-side —
 never sent to any client.
 
+### Final Beopardy round
+
+Add an optional `finalRound` for an open-ended finish after the main board.
+Same players; every correct answer is worth the same points; multiple people can
+be right.
+
+```json
+{
+  "finalRound": {
+    "points": 150,
+    "timerSeconds": 60,
+    "questions": [
+      { "prompt": "Clue on the big screen", "answer": "Moderator-only", "image": "/assets/final-1.jpg" },
+      { "prompt": "No image, no hint", "answer": "..." }
+    ]
+  }
+}
+```
+
+- `points` (default 150) — awarded to each player the moderator marks correct.
+- `timerSeconds` (default 60) — the answer-writing countdown, shown on both screens.
+- Each question: `prompt` and `answer` required; `hint` and `image` optional.
+- `image` is used directly as an `<img src>`. For local files, drop them in the
+  `assets/` folder (served at `/assets/`, uncached) and reference
+  `"/assets/yourfile.jpg"`; or use a full `https://…` URL. Change the folder
+  with `-assets dir` (`-assets ""` disables it).
+
+In play: after the winner reveal, the moderator taps **Start Final Beopardy**;
+the big screen follows automatically (no new URL to type on the TV). Per
+question the moderator reveals it, starts the timer, marks everyone who got it
+right, then advances. The current phase and question are persisted, so a restart
+resumes mid-final-round.
+
 ## Roadmap
 
 - [x] **Phase 1 — Skeleton**: Go server, Vite/React UI, JSON loader, board in
@@ -170,6 +203,10 @@ never sent to any client.
 - [x] **Winner-reveal finale**: scores stay hidden on the big screen all game;
       the moderator triggers a full-screen reveal of the final standings, top
       scorer highlighted.
+- [x] **Final Beopardy round**: optional open-ended round (`finalRound`) with a
+      shared per-question value, image support, a synced answer-writing timer on
+      both screens, and multi-player correct marking. Phase is persisted, so it
+      resumes after a restart.
 - [ ] **TV-hardening**: older LG/smart-TV browser support (build target,
       aspect-ratio fallback, QR-code join).
 - [ ] **Polish**: sounds, animations, game editing.

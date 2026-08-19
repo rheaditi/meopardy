@@ -1,6 +1,7 @@
 import type { Game } from "../types";
 import { cellKey, doneSet } from "../types";
 import { Board } from "../components/Board";
+import { FinalPublicView } from "./FinalPublicView";
 import { useGameState } from "../useGameState";
 import type { Transport } from "../useTransport";
 import type { Theme } from "../useTheme";
@@ -25,6 +26,7 @@ export function PublicView({
   onToggleTheme,
 }: PublicViewProps) {
   const { state } = useGameState(transport);
+  const phase = state?.phase ?? "board";
   const done = doneSet(state);
   const open = state?.openCell ?? null;
   const activeKey = open ? cellKey(open.category, open.row) : null;
@@ -41,10 +43,14 @@ export function PublicView({
 
   return (
     <div className="stage">
-      <div className="stage-inner">
-        <h1 className="stage-title">{game.title}</h1>
-        <Board game={game} done={done} activeKey={activeKey} fill />
-      </div>
+      {phase === "final" && game.finalRound && state ? (
+        <FinalPublicView game={game} state={state} />
+      ) : (
+        <div className="stage-inner">
+          <h1 className="stage-title">{game.title}</h1>
+          <Board game={game} done={done} activeKey={activeKey} fill />
+        </div>
+      )}
 
       {showFinale ? (
         <div className="finale">

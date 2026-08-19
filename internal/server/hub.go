@@ -3,7 +3,10 @@ package server
 import (
 	"encoding/json"
 	"sync"
+	"time"
 )
+
+func nowMs() int64 { return time.Now().UnixMilli() }
 
 // maxUndo bounds how far back the moderator can undo.
 const maxUndo = 100
@@ -31,6 +34,34 @@ type GameState struct {
 	// ShowFinale is true when the moderator has triggered the end-game reveal of
 	// the final scores on the big screen.
 	ShowFinale bool `json:"showFinale"`
+
+	// ---- Final round ----
+	// Phase is "board" (the main grid) or "final" (the final round). Persisted,
+	// so the game resumes in the right phase after a restart.
+	Phase string `json:"phase"`
+	// FinalIndex is the current final-round question (0-based).
+	FinalIndex int `json:"finalIndex"`
+	// FinalRevealed is true when the current final question is shown on the big
+	// screen.
+	FinalRevealed bool `json:"finalRevealed"`
+	// FinalAwarded is the set of players marked correct for the current final
+	// question (a toggle, so it can be corrected).
+	FinalAwarded map[string]bool `json:"finalAwarded"`
+	// TimerEndsAt is when the answer-writing countdown ends, in server unix
+	// millis; 0 means no timer is running.
+	TimerEndsAt int64 `json:"timerEndsAt"`
+}
+
+// wireState is what clients receive: the game state plus the server's current
+// clock, so a client can compute the timer's remaining time without depending
+// on its own (possibly skewed) clock.
+type wireState struct {
+	GameState
+	ServerNow int64 `json:"serverNow"`
+}
+
+func toWire(s GameState) wireState {
+	return wireState{GameState: s, ServerNow: nowMs()}
 }
 
 // hub owns the game state and fans out changes to connected WebSocket clients.
@@ -136,15 +167,30 @@ func clone(s GameState) GameState {
 	for k, v := range s.Scores {
 		scores[k] = v
 	}
+	awarded := make(map[string]bool, len(s.FinalAwarded))
+	for k, v := range s.FinalAwarded {
+		awarded[k] = v
+	}
 	var open *CellRef
 	if s.OpenCell != nil {
 		c := *s.OpenCell
 		open = &c
 	}
-	return GameState{Done: done, OpenCell: open, Revealed: s.Revealed, Scores: scores, ShowFinale: s.ShowFinale}
+	return GameState{
+		Done:          done,
+		OpenCell:      open,
+		Revealed:      s.Revealed,
+		Scores:        scores,
+		ShowFinale:    s.ShowFinale,
+		Phase:         s.Phase,
+		FinalIndex:    s.FinalIndex,
+		FinalRevealed: s.FinalRevealed,
+		FinalAwarded:  awarded,
+		TimerEndsAt:   s.TimerEndsAt,
+	}
 }
 
 func encode(s GameState) []byte {
-	b, _ := json.Marshal(clone(s))
+	b, _ := json.Marshal(toWire(clone(s)))
 	return b
 }

@@ -55,7 +55,17 @@ export type ActionType =
   | "undo"
   | "finale"
   | "hideFinale"
-  | "reset";
+  | "reset"
+  // Final round
+  | "startFinal"
+  | "showBoard"
+  | "finalReveal"
+  | "finalHide"
+  | "finalStartTimer"
+  | "finalStopTimer"
+  | "finalToggle"
+  | "finalNext"
+  | "finalPrev";
 
 // postAction sends a moderator command to the server and returns the resulting
 // game state, so the caller can update its screen optimistically. The stored

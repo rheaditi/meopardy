@@ -28,15 +28,34 @@ type Category struct {
 	Cells       []Cell `json:"cells"`
 }
 
+// FinalQuestion is one question in the final round. Unlike board cells it has
+// no per-question points (the round has a single value) but may carry an image.
+type FinalQuestion struct {
+	Prompt string `json:"prompt"`
+	Answer string `json:"answer"`
+	Hint   string `json:"hint,omitempty"`
+	// Image is used directly as an <img src> on the big screen — a local path
+	// served from the assets folder (e.g. "/assets/final-1.jpg") or a full URL.
+	Image string `json:"image,omitempty"`
+}
+
+// FinalRound is the optional open-ended round played after the main board.
+type FinalRound struct {
+	Points       int             `json:"points"`       // awarded per correct player (default 150)
+	TimerSeconds int             `json:"timerSeconds"` // answer-writing countdown (default 60)
+	Questions    []FinalQuestion `json:"questions"`
+}
+
 // Game is a full board definition loaded from a JSON file. This is the static
 // starting state; live scores and which cells are answered live elsewhere.
 type Game struct {
 	Title string `json:"title"`
 	// Passkey, if set, gates the moderator view. It lives only on the server —
 	// it is stripped before the game is sent to any client.
-	Passkey    string     `json:"passkey,omitempty"`
-	Players    []string   `json:"players,omitempty"`
-	Categories []Category `json:"categories"`
+	Passkey    string      `json:"passkey,omitempty"`
+	Players    []string    `json:"players,omitempty"`
+	Categories []Category  `json:"categories"`
+	FinalRound *FinalRound `json:"finalRound,omitempty"`
 }
 
 // Load reads and validates a game definition from the given JSON file path.
@@ -52,9 +71,9 @@ func Load(path string) (*Game, error) {
 	return g, nil
 }
 
-// Parse unmarshals and validates a game definition from JSON bytes. It's the
-// single source of truth for "will the server accept this game", shared by the
-// server and the game linter.
+// Parse unmarshals and validates a game definition from JSON bytes, then applies
+// defaults. It's the single source of truth for "will the server accept this
+// game", shared by the server and the game linter.
 func Parse(data []byte) (*Game, error) {
 	var g Game
 	if err := json.Unmarshal(data, &g); err != nil {
@@ -62,6 +81,14 @@ func Parse(data []byte) (*Game, error) {
 	}
 	if err := g.validate(); err != nil {
 		return nil, fmt.Errorf("invalid: %w", err)
+	}
+	if g.FinalRound != nil {
+		if g.FinalRound.Points <= 0 {
+			g.FinalRound.Points = 150
+		}
+		if g.FinalRound.TimerSeconds <= 0 {
+			g.FinalRound.TimerSeconds = 60
+		}
 	}
 	return &g, nil
 }
@@ -97,6 +124,19 @@ func (g *Game) validate() error {
 			}
 			if cell.Answer == "" {
 				return fmt.Errorf("category %q cell %d is missing an answer", c.Name, j+1)
+			}
+		}
+	}
+	if fr := g.FinalRound; fr != nil {
+		if len(fr.Questions) == 0 {
+			return fmt.Errorf("finalRound has no questions")
+		}
+		for i, q := range fr.Questions {
+			if q.Prompt == "" {
+				return fmt.Errorf("finalRound question %d is missing a prompt", i+1)
+			}
+			if q.Answer == "" {
+				return fmt.Errorf("finalRound question %d is missing an answer", i+1)
 			}
 		}
 	}

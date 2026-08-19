@@ -20,18 +20,19 @@ import (
 
 // Server holds the dependencies shared across HTTP handlers.
 type Server struct {
-	game   *game.Game
-	hub    *hub
-	assets fs.FS
-	mux    *http.ServeMux
+	game      *game.Game
+	hub       *hub
+	assets    fs.FS
+	assetsDir string
+	mux       *http.ServeMux
 }
 
 // New builds a Server. assets is the built frontend filesystem (embedded in
 // production, or nil during development when Vite serves the UI itself).
 // statePath, when non-empty, is a JSON file the live game state is saved to and
 // resumed from across restarts.
-func New(g *game.Game, assets fs.FS, statePath string) *Server {
-	s := &Server{game: g, assets: assets, mux: http.NewServeMux()}
+func New(g *game.Game, assets fs.FS, statePath, assetsDir string) *Server {
+	s := &Server{game: g, assets: assets, assetsDir: assetsDir, mux: http.NewServeMux()}
 
 	initial := s.freshState()
 	var persist func(GameState)
@@ -53,13 +54,19 @@ func New(g *game.Game, assets fs.FS, statePath string) *Server {
 	return s
 }
 
-// freshState is a new game: no answered cells, every player at zero.
+// freshState is a new game: no answered cells, every player at zero, on the
+// board phase.
 func (s *Server) freshState() GameState {
 	scores := make(map[string]int, len(s.game.Players))
 	for _, p := range s.game.Players {
 		scores[p] = 0
 	}
-	return GameState{Done: map[string]bool{}, Scores: scores}
+	return GameState{
+		Done:         map[string]bool{},
+		Scores:       scores,
+		Phase:        "board",
+		FinalAwarded: map[string]bool{},
+	}
 }
 
 // reconcile merges a saved state onto a fresh one for the current game, so a
@@ -82,6 +89,31 @@ func (s *Server) reconcile(saved GameState) GameState {
 		st.OpenCell = &c
 		st.Revealed = saved.Revealed
 	}
+
+	// Final-round phase, clamped to what the current game supports.
+	st.ShowFinale = saved.ShowFinale
+	st.Phase = saved.Phase
+	if st.Phase == "" {
+		st.Phase = "board"
+	}
+	if s.game.FinalRound == nil {
+		st.Phase = "board"
+	} else {
+		st.FinalIndex = saved.FinalIndex
+		if st.FinalIndex < 0 {
+			st.FinalIndex = 0
+		}
+		if n := len(s.game.FinalRound.Questions); st.FinalIndex >= n {
+			st.FinalIndex = n - 1
+		}
+		st.FinalRevealed = saved.FinalRevealed
+		st.TimerEndsAt = saved.TimerEndsAt
+		for _, p := range s.game.Players {
+			if saved.FinalAwarded[p] {
+				st.FinalAwarded[p] = true
+			}
+		}
+	}
 	return st
 }
 
@@ -93,6 +125,13 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/ws", s.handleWS)
 	s.mux.HandleFunc("POST /api/moderator/auth", s.handleAuth)
 	s.mux.HandleFunc("POST /api/action", s.handleAction)
+
+	// Serve game image assets from disk (final-round images, etc.) with
+	// no-store headers so freshly-swapped images always show up.
+	if s.assetsDir != "" {
+		fileServer := http.FileServer(http.Dir(s.assetsDir))
+		s.mux.Handle("GET /assets/", http.StripPrefix("/assets/", noCache(fileServer)))
+	}
 
 	// Serve the SPA for everything else. If no assets were embedded (dev mode),
 	// this responds with a helpful hint instead of a blank 404.
@@ -146,7 +185,18 @@ func (s *Server) checkPasskey(r *http.Request) bool {
 }
 
 func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.hub.snapshot())
+	writeJSON(w, http.StatusOK, toWire(s.hub.snapshot()))
+}
+
+// noCache wraps a handler so responses aren't cached — handy for game images
+// that get swapped out while building a game.
+func noCache(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		h.ServeHTTP(w, r)
+	})
 }
 
 // handleWS streams live game state to a screen over a WebSocket. The server
@@ -254,6 +304,85 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 		s.hub.mutate(func(st *GameState) { st.ShowFinale = true })
 	case "hideFinale":
 		s.hub.mutate(func(st *GameState) { st.ShowFinale = false })
+	case "startFinal":
+		if s.game.FinalRound == nil {
+			http.Error(w, "this game has no final round", http.StatusBadRequest)
+			return
+		}
+		s.hub.mutate(func(st *GameState) {
+			st.Phase = "final"
+			st.FinalIndex = 0
+			st.FinalRevealed = false
+			st.FinalAwarded = map[string]bool{}
+			st.TimerEndsAt = 0
+			st.ShowFinale = false
+			st.OpenCell = nil
+			st.Revealed = false
+		})
+	case "showBoard":
+		s.hub.mutate(func(st *GameState) {
+			st.Phase = "board"
+			st.TimerEndsAt = 0
+			st.ShowFinale = false
+		})
+	case "finalReveal":
+		s.hub.mutate(func(st *GameState) { st.FinalRevealed = true })
+	case "finalHide":
+		s.hub.mutate(func(st *GameState) { st.FinalRevealed = false })
+	case "finalStartTimer":
+		if s.game.FinalRound == nil {
+			http.Error(w, "this game has no final round", http.StatusBadRequest)
+			return
+		}
+		dur := int64(s.game.FinalRound.TimerSeconds) * 1000
+		s.hub.mutate(func(st *GameState) { st.TimerEndsAt = nowMs() + dur })
+	case "finalStopTimer":
+		s.hub.mutate(func(st *GameState) { st.TimerEndsAt = 0 })
+	case "finalToggle":
+		if s.game.FinalRound == nil {
+			http.Error(w, "this game has no final round", http.StatusBadRequest)
+			return
+		}
+		if !s.playerKnown(a.Player) {
+			http.Error(w, "unknown player", http.StatusBadRequest)
+			return
+		}
+		pts := s.game.FinalRound.Points
+		s.hub.mutate(func(st *GameState) {
+			if st.FinalAwarded == nil {
+				st.FinalAwarded = map[string]bool{}
+			}
+			if st.FinalAwarded[a.Player] {
+				delete(st.FinalAwarded, a.Player)
+				st.Scores[a.Player] -= pts
+			} else {
+				st.FinalAwarded[a.Player] = true
+				st.Scores[a.Player] += pts
+			}
+		})
+	case "finalNext":
+		if s.game.FinalRound == nil {
+			http.Error(w, "this game has no final round", http.StatusBadRequest)
+			return
+		}
+		last := len(s.game.FinalRound.Questions) - 1
+		s.hub.mutate(func(st *GameState) {
+			if st.FinalIndex < last {
+				st.FinalIndex++
+			}
+			st.FinalRevealed = false
+			st.TimerEndsAt = 0
+			st.FinalAwarded = map[string]bool{}
+		})
+	case "finalPrev":
+		s.hub.mutate(func(st *GameState) {
+			if st.FinalIndex > 0 {
+				st.FinalIndex--
+			}
+			st.FinalRevealed = false
+			st.TimerEndsAt = 0
+			st.FinalAwarded = map[string]bool{}
+		})
 	case "cancel":
 		s.hub.mutate(func(st *GameState) {
 			st.OpenCell = nil
@@ -273,6 +402,11 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 			st.OpenCell = nil
 			st.Revealed = false
 			st.ShowFinale = false
+			st.Phase = "board"
+			st.FinalIndex = 0
+			st.FinalRevealed = false
+			st.FinalAwarded = map[string]bool{}
+			st.TimerEndsAt = 0
 			for p := range st.Scores {
 				st.Scores[p] = 0
 			}
