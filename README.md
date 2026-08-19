@@ -102,10 +102,13 @@ classic "answer in the form of a question" framing is optional). See
 - [x] **Phase 2 — Live sync**: server-authoritative game state shared across
       screens (open/close a cell, reset the board), with a switchable transport —
       polling (default, TV-safe) or WebSocket (instant) — chosen per screen.
+- [x] **Reveal question**: the moderator opens a cell (seeing the answer/hint),
+      reads it aloud, then reveals the question full-screen on the big screen for
+      players — the answer never leaves the moderator's device.
 - [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
       shared passkey.
-- [ ] **Phase 3 — Game loop**: reveal prompt on the big screen, award/deduct per
-      player, commit + undo, live scoreboard.
+- [ ] **Phase 3 — Game loop**: players + scores on the big screen, award/deduct
+      per player, commit + undo, live scoreboard.
 - [ ] **Phase 4 — Setup + persistence**: start screen (pick game, add players,
       choose scoring mode), auto-save state to disk, resume after a crash.
 - [ ] **Phase 5 — Polish**: reset/undo history, final scoreboard, sounds,

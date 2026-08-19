@@ -9,7 +9,7 @@ export async function fetchGame(): Promise<Game> {
   return (await res.json()) as Game;
 }
 
-export type ActionType = "open" | "cancel" | "close" | "reset";
+export type ActionType = "open" | "reveal" | "hide" | "cancel" | "close" | "reset";
 
 // postAction sends a moderator command to the server and returns the resulting
 // game state, so the caller can update its screen optimistically.

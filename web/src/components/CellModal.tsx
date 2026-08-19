@@ -3,14 +3,24 @@ import type { Cell } from "../types";
 interface CellModalProps {
   categoryName: string;
   cell: Cell;
+  revealed: boolean;
+  onToggleReveal: () => void;
   onClose: () => void;
   onCloseCell: () => void;
 }
 
 // CellModal is the moderator's view of an open cell: it reveals the prompt plus
-// the answer and hint (which the big screen never shows). In Phase 1 the only
-// action is closing the cell; awarding points to players arrives in Phase 3.
-export function CellModal({ categoryName, cell, onClose, onCloseCell }: CellModalProps) {
+// the answer and hint (which the big screen never shows). The moderator reads
+// the question aloud, then taps "Show question on big screen" so players can
+// read it. Awarding points to players arrives in Phase 3.
+export function CellModal({
+  categoryName,
+  cell,
+  revealed,
+  onToggleReveal,
+  onClose,
+  onCloseCell,
+}: CellModalProps) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
@@ -30,6 +40,13 @@ export function CellModal({ categoryName, cell, onClose, onCloseCell }: CellModa
             {cell.hint ? ` · hint: ${cell.hint}` : ""}
           </div>
         </div>
+
+        <button
+          className={`btn reveal-toggle${revealed ? " on" : ""}`}
+          onClick={onToggleReveal}
+        >
+          {revealed ? "Hide question from big screen" : "Show question on big screen"}
+        </button>
 
         <div className="modal-actions">
           <button className="btn" onClick={onClose}>

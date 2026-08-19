@@ -34,6 +34,7 @@ export interface CellRef {
 export interface GameState {
   done: Record<string, boolean>;
   openCell: CellRef | null;
+  revealed: boolean;
 }
 
 // doneSet converts the wire format into a Set of "category:row" keys.

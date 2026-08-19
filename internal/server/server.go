@@ -111,8 +111,10 @@ type actionRequest struct {
 
 // handleAction applies a moderator command and broadcasts the resulting state.
 //
-//   - open:   reveal a cell (highlight it on the big screen)
-//   - cancel: close the reveal without marking the cell answered
+//   - open:   put a cell in play (highlight it on the big screen)
+//   - reveal: show the open cell's question on the big screen
+//   - hide:   hide the question again (cell stays in play)
+//   - cancel: take the cell out of play without marking it answered
 //   - close:  mark the open cell answered and clear it
 //   - reset:  clear the whole board
 func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
@@ -133,20 +135,34 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 				return // don't reopen an answered cell
 			}
 			st.OpenCell = &CellRef{Category: a.Category, Row: a.Row}
+			st.Revealed = false // a freshly opened cell starts hidden
 		})
+	case "reveal":
+		s.hub.mutate(func(st *GameState) {
+			if st.OpenCell != nil {
+				st.Revealed = true
+			}
+		})
+	case "hide":
+		s.hub.mutate(func(st *GameState) { st.Revealed = false })
 	case "cancel":
-		s.hub.mutate(func(st *GameState) { st.OpenCell = nil })
+		s.hub.mutate(func(st *GameState) {
+			st.OpenCell = nil
+			st.Revealed = false
+		})
 	case "close":
 		s.hub.mutate(func(st *GameState) {
 			if st.OpenCell != nil {
 				st.Done[cellKey(st.OpenCell.Category, st.OpenCell.Row)] = true
 				st.OpenCell = nil
 			}
+			st.Revealed = false
 		})
 	case "reset":
 		s.hub.mutate(func(st *GameState) {
 			st.Done = map[string]bool{}
 			st.OpenCell = nil
+			st.Revealed = false
 		})
 	default:
 		http.Error(w, "unknown action type", http.StatusBadRequest)

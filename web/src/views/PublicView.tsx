@@ -26,9 +26,10 @@ export function PublicView({
 }: PublicViewProps) {
   const { state } = useGameState(transport);
   const done = doneSet(state);
-  const activeKey = state?.openCell
-    ? cellKey(state.openCell.category, state.openCell.row)
-    : null;
+  const open = state?.openCell ?? null;
+  const activeKey = open ? cellKey(open.category, open.row) : null;
+  const revealedCell =
+    open && state?.revealed ? game.categories[open.category]?.cells[open.row] : null;
 
   return (
     <div className="stage">
@@ -36,6 +37,15 @@ export function PublicView({
         <h1 className="stage-title">{game.title}</h1>
         <Board game={game} done={done} activeKey={activeKey} fill />
       </div>
+
+      {revealedCell && open && (
+        <div className="reveal">
+          <div className="reveal-meta">
+            {game.categories[open.category].name} · {revealedCell.points}
+          </div>
+          <div className="reveal-prompt">{revealedCell.prompt}</div>
+        </div>
+      )}
 
       <div className="dock" role="group" aria-label="Display controls">
         <button

@@ -20,6 +20,9 @@ type GameState struct {
 	// OpenCell is the cell currently in play (highlighted on the big screen,
 	// revealed on the moderator's screen), or null when no cell is open.
 	OpenCell *CellRef `json:"openCell"`
+	// Revealed is true when the moderator has chosen to show the open cell's
+	// question on the big screen for players to read.
+	Revealed bool `json:"revealed"`
 }
 
 // hub owns the game state and fans out changes to connected WebSocket clients.
@@ -91,7 +94,7 @@ func clone(s GameState) GameState {
 		c := *s.OpenCell
 		open = &c
 	}
-	return GameState{Done: done, OpenCell: open}
+	return GameState{Done: done, OpenCell: open, Revealed: s.Revealed}
 }
 
 func encode(s GameState) []byte {

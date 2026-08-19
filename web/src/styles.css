@@ -166,6 +166,41 @@ body {
   border-color: var(--accent);
 }
 
+/* The revealed question, shown full-screen for players to read. */
+.reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 8vmin;
+  background: var(--bg);
+  text-align: center;
+}
+
+.reveal-meta {
+  font-size: clamp(16px, 2.6vmin, 32px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.reveal-prompt {
+  font-size: clamp(28px, 6.4vmin, 104px);
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 92%;
+}
+
+/* Keep the dock clickable above the reveal overlay. */
+.dock {
+  z-index: 6;
+}
+
 /* ---- Board ---- */
 .board-wrap {
   flex: 1;
@@ -343,6 +378,17 @@ button.cell:active:not(.done) {
 
 .field.answer .field-value {
   color: var(--text);
+}
+
+.reveal-toggle {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.reveal-toggle.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .modal-actions {

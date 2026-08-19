@@ -21,6 +21,7 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
   const open = state?.openCell ?? null;
   const openCell = open ? game.categories[open.category]?.cells[open.row] : null;
   const activeKey = open ? cellKey(open.category, open.row) : null;
+  const revealed = Boolean(state?.revealed);
 
   function report(err: unknown) {
     // Actions are best-effort; the SSE stream is the source of truth. Log for
@@ -55,6 +56,10 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
         <CellModal
           categoryName={game.categories[open.category].name}
           cell={openCell}
+          revealed={revealed}
+          onToggleReveal={() =>
+            postAction(revealed ? "hide" : "reveal").then(apply).catch(report)
+          }
           onClose={() => postAction("cancel").then(apply).catch(report)}
           onCloseCell={() => postAction("close").then(apply).catch(report)}
         />
