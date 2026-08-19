@@ -53,5 +53,43 @@
         { "points": 200, "prompt": "What do these three words have in common: FIELD, CRY, LAW", "answer": "OUT", "hint": "it's not inside" }
       ]
     }
-  ]
+  ],
+  "finalRound": {
+    "points": 150,
+    "timerSeconds": 60,
+    "description": "Rebus Puzzles",
+    "questions": [
+      {
+        "prompt": "What phrase is this image trying to convey?",
+        "answer": "Drinks are on me",
+        "image": "/assets/rebus-1.png"
+      },
+      {
+        "prompt": "What is this?",
+        "answer": "One in a million",
+        "image": "/assets/rebus-2.png"
+      },
+      {
+        "prompt": "What's this picture trying to say?",
+        "answer": "Scrambled Eggs",
+        "image": "/assets/rebus-3.png"
+      },
+      {
+        "prompt": "What's this picture trying to say?",
+        "answer": "A misunderstanding between friends",
+        "image": "/assets/rebus-4.png"
+      },
+      {
+        "prompt": "What's this picture trying to say?",
+        "answer": "Tenessee",
+        "image": "/assets/rebus-5.png"
+      },
+      {
+        "prompt": "What's this picture trying to say?",
+        "answer": "Once in a blue moon",
+        "image": "/assets/rebus-6.png",
+        "hint": "Pay attention to the colors"
+      }
+    ]
+  }
 }

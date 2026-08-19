@@ -68,7 +68,6 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
                 setConfirmReset(false);
               } else {
                 setConfirmReset(true);
-                setTimeout(() => setConfirmReset(false), 3000);
               }
             }}
           >
