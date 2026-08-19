@@ -20,8 +20,12 @@ type Cell struct {
 
 // Category is one column of the board.
 type Category struct {
-	Name  string `json:"name"`
-	Cells []Cell `json:"cells"`
+	Name string `json:"name"`
+	// Description is optional moderator-only context, shown as a tooltip when
+	// the moderator hovers the category so they can explain it if needed. It is
+	// not displayed on the big screen.
+	Description string `json:"description,omitempty"`
+	Cells       []Cell `json:"cells"`
 }
 
 // Game is a full board definition loaded from a JSON file. This is the static
@@ -41,14 +45,23 @@ func Load(path string) (*Game, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read game file: %w", err)
 	}
+	g, err := Parse(data)
+	if err != nil {
+		return nil, fmt.Errorf("game file %q: %w", path, err)
+	}
+	return g, nil
+}
 
+// Parse unmarshals and validates a game definition from JSON bytes. It's the
+// single source of truth for "will the server accept this game", shared by the
+// server and the game linter.
+func Parse(data []byte) (*Game, error) {
 	var g Game
 	if err := json.Unmarshal(data, &g); err != nil {
-		return nil, fmt.Errorf("parse game file %q: %w", path, err)
+		return nil, fmt.Errorf("parse: %w", err)
 	}
-
 	if err := g.validate(); err != nil {
-		return nil, fmt.Errorf("invalid game file %q: %w", path, err)
+		return nil, fmt.Errorf("invalid: %w", err)
 	}
 	return &g, nil
 }

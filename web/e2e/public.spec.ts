@@ -28,5 +28,7 @@ test.describe("big screen", () => {
     await expect(page.getByRole("button", { name: "100", exact: true })).toHaveCount(0);
     // No answer text leaks to the shared screen.
     await expect(page.getByText("Alpha one answer")).toHaveCount(0);
+    // Category descriptions are moderator-only — no hover tooltip here.
+    await expect(page.locator(".cat-head.has-desc")).toHaveCount(0);
   });
 });

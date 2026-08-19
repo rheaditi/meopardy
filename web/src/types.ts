@@ -9,6 +9,7 @@ export interface Cell {
 
 export interface Category {
   name: string;
+  description?: string;
   cells: Cell[];
 }
 

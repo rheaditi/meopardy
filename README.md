@@ -49,14 +49,44 @@ the server. The resulting `./meopardy` binary is fully self-contained — copy i
 
 ### Choosing a game
 
+`make run` plays `games/sample.json` by default. Pick another with `GAME` (and
+optionally `ADDR`):
+
 ```bash
-./meopardy -game games/sample.json -addr :8080
+make run GAME=games/trick-questions.json
+
+# on a specific port, so others can join at http://<your-ip>:9000
+make run GAME=games/trick-questions.json ADDR=:9000
+```
+
+Or run the already-built binary directly:
+
+```bash
+./meopardy -game games/trick-questions.json -addr :9000
+```
+
+During development, `go run` takes the same flags:
+
+```bash
+go run . -game games/trick-questions.json
 ```
 
 Live progress (scores, answered cells) is saved to `meopardy-state.json` and
 resumed automatically on the next start, so a restart won't lose an in-progress
 game. Use `-state path.json` to change the file, or `-state ""` to disable it.
 Deleting the file (or hitting Reset in the moderator) starts fresh.
+
+### Writing a game
+
+Copy [`games/trick-questions.json`](games/trick-questions.json) — a template of
+placeholders — and fill it in. Before playing, check it will load and tidy up
+formatting (fixes trailing commas + indentation in place):
+
+```bash
+make lint-game GAME=games/trick-questions.json
+```
+
+Pass a glob to lint several at once: `make lint-game GAME='games/*.json'`.
 
 ## Development
 

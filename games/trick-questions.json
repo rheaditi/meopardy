@@ -1,0 +1,57 @@
+{
+  "title": "Trick Questions",
+  "passkey": "",
+  "players": ["Player 1", "Player 2", "Player 3", "Player 4"],
+  "categories": [
+    {
+      "name": "Riddle Me This",
+      "description": "Classic riddles",
+      "cells": [
+        { "points": 50, "prompt": "C1 · 50 — question here", "answer": "C1 · 50 — answer", "hint": "optional hint" },
+        { "points": 100, "prompt": "C1 · 100 — question here", "answer": "C1 · 100 — answer", "hint": "optional hint" },
+        { "points": 150, "prompt": "C1 · 150 — question here", "answer": "C1 · 150 — answer", "hint": "optional hint" },
+        { "points": 200, "prompt": "C1 · 200 — question here", "answer": "C1 · 200 — answer", "hint": "optional hint" }
+      ]
+    },
+    {
+      "name": "Tricked Ya!",
+      "description": "Questions that will seem like you will know the answer, but it will be slightly off",
+      "cells": [
+        { "points": 50, "prompt": "C2 · 50 — question here", "answer": "C2 · 50 — answer", "hint": "optional hint" },
+        { "points": 100, "prompt": "C2 · 100 — question here", "answer": "C2 · 100 — answer", "hint": "optional hint" },
+        { "points": 150, "prompt": "C2 · 150 — question here", "answer": "C2 · 150 — answer", "hint": "optional hint" },
+        { "points": 200, "prompt": "C2 · 200 — question here", "answer": "C2 · 200 — answer", "hint": "optional hint" }
+      ]
+    },
+    {
+      "name": "Pun-chline",
+      "description": "Puns & double meanings",
+      "cells": [
+        { "points": 50, "prompt": "C3 · 50 — question here", "answer": "C3 · 50 — answer", "hint": "optional hint" },
+        { "points": 100, "prompt": "C3 · 100 — question here", "answer": "C3 · 100 — answer", "hint": "optional hint" },
+        { "points": 150, "prompt": "C3 · 150 — question here", "answer": "C3 · 150 — answer", "hint": "optional hint" },
+        { "points": 200, "prompt": "C3 · 200 — question here", "answer": "C3 · 200 — answer", "hint": "optional hint" }
+      ]
+    },
+    {
+      "name": "History Bluff",
+      "description": "Common history misconceptions",
+      "cells": [
+        { "points": 50, "prompt": "C4 · 50 — question here", "answer": "C4 · 50 — answer", "hint": "optional hint" },
+        { "points": 100, "prompt": "C4 · 100 — question here", "answer": "C4 · 100 — answer", "hint": "optional hint" },
+        { "points": 150, "prompt": "C4 · 150 — question here", "answer": "C4 · 150 — answer", "hint": "optional hint" },
+        { "points": 200, "prompt": "C4 · 200 — question here", "answer": "C4 · 200 — answer", "hint": "optional hint" }
+      ]
+    },
+    {
+      "name": "Making a Connection",
+      "description": "New-york Times Connections TRI(Cycle, Pod, Angle)",
+      "cells": [
+        { "points": 50, "prompt": "C5 · 50 — question here", "answer": "C5 · 50 — answer", "hint": "optional hint" },
+        { "points": 100, "prompt": "C5 · 100 — question here", "answer": "C5 · 100 — answer", "hint": "optional hint" },
+        { "points": 150, "prompt": "C5 · 150 — question here", "answer": "C5 · 150 — answer", "hint": "optional hint" },
+        { "points": 200, "prompt": "C5 · 200 — question here", "answer": "C5 · 200 — answer", "hint": "optional hint" }
+      ]
+    }
+  ]
+}

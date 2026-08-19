@@ -32,11 +32,19 @@ export function Board({ game, done, activeKey, fill, onCellClick }: BoardProps) 
 
   return (
     <div className={`board${fill ? " board-fill" : ""}`} style={style}>
-      {game.categories.map((cat, ci) => (
-        <div className="cat-head" key={`h-${ci}`}>
-          {cat.name}
-        </div>
-      ))}
+      {game.categories.map((cat, ci) => {
+        // Show the description as a hover tooltip on the moderator only.
+        const hasDesc = interactive && Boolean(cat.description);
+        return (
+          <div
+            className={`cat-head${hasDesc ? " has-desc" : ""}`}
+            key={`h-${ci}`}
+            title={hasDesc ? cat.description : undefined}
+          >
+            {cat.name}
+          </div>
+        );
+      })}
 
       {Array.from({ length: rows }).map((_, ri) =>
         game.categories.map((cat, ci) => {

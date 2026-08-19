@@ -352,6 +352,13 @@ body {
   line-height: 1.15;
 }
 
+/* A category with a description: hint that hovering shows it (moderator). */
+.cat-head.has-desc {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
 .cell {
   border: none;
   border-radius: 8px;

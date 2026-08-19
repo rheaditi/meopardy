@@ -4,6 +4,7 @@
   "categories": [
     {
       "name": "Alpha",
+      "description": "Alpha category note",
       "cells": [
         { "points": 100, "prompt": "Alpha one prompt", "answer": "Alpha one answer" },
         { "points": 200, "prompt": "Alpha two prompt", "answer": "Alpha two answer" }

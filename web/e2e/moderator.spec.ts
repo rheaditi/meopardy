@@ -12,6 +12,12 @@ test.describe("moderator", () => {
     await page.goto("/moderator");
     await expect(page.getByText("Moderator")).toBeVisible();
 
+    // The category description is available as a hover tooltip here.
+    await expect(page.locator(".cat-head").filter({ hasText: "Alpha" })).toHaveAttribute(
+      "title",
+      "Alpha category note",
+    );
+
     // The Alpha 100 cell (unique point value in the fixture).
     const cell = page.getByRole("button", { name: "100", exact: true });
     await expect(cell).toBeEnabled();
