@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { resetBoard } from "./helpers";
 
 // The big-screen (public) view is read-only: it shows the board but reveals no
 // answers and offers no controls.
 test.describe("big screen", () => {
+  test.beforeEach(async ({ request }) => resetBoard(request));
+
   test("shows the game title and the full board", async ({ page }) => {
     await page.goto("/");
 

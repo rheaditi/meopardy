@@ -14,6 +14,12 @@ Two surfaces:
 Players buzz in offline (a bell, a shout, hands up) — the moderator just picks
 who won or lost each cell.
 
+The two screens stay in sync: game state lives on the server, and every screen
+polls it about once a second, so opening or closing a cell on the moderator
+shows up on the big screen a moment later, with no reload. Polling (rather than
+a persistent connection) is deliberate — it's the robust choice on smart-TV
+browsers, which often buffer or drop long-lived connections.
+
 ## Run it
 
 You need [Go](https://go.dev) 1.26+ and [Node](https://nodejs.org) 18+.
@@ -86,8 +92,12 @@ classic "answer in the form of a question" framing is optional). See
 
 - [x] **Phase 1 — Skeleton**: Go server, Vite/React UI, JSON loader, board in
       both views, dark mode.
-- [ ] **Phase 2 — Live sync**: WebSocket so the big screen mirrors the moderator
-      instantly; passkey gate on the moderator view.
+- [x] **Phase 2 — Live sync**: server-authoritative game state that every screen
+      polls (~1.5s), so the big screen mirrors the moderator (open/close a cell,
+      reset the board). Polling chosen over a persistent connection for smart-TV
+      browser robustness.
+- [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
+      shared passkey.
 - [ ] **Phase 3 — Game loop**: reveal prompt on the big screen, award/deduct per
       player, commit + undo, live scoreboard.
 - [ ] **Phase 4 — Setup + persistence**: start screen (pick game, add players,

@@ -1,9 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { resetBoard } from "./helpers";
 
 // The moderator view is the control surface: cells are clickable, opening one
 // reveals the prompt plus the answer/hint (which never appears on the big
 // screen), and the cell can then be closed.
 test.describe("moderator", () => {
+  test.beforeEach(async ({ request }) => resetBoard(request));
+
   test("opening a cell reveals the answer, closing it greys the cell out", async ({ page }) => {
     await page.goto("/moderator");
     await expect(page.getByText("Moderator")).toBeVisible();

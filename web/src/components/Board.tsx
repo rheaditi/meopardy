@@ -5,6 +5,8 @@ import { columnColor } from "../constants";
 interface BoardProps {
   game: Game;
   done: Set<string>;
+  // The cell currently in play, highlighted on every screen. Null when none.
+  activeKey?: string | null;
   // When set, cells are clickable buttons (moderator). Omit for the read-only
   // public view.
   onCellClick?: (categoryIndex: number, rowIndex: number) => void;
@@ -13,7 +15,7 @@ interface BoardProps {
 // Board renders the category headers and the grid of point cells. Answered
 // ("done") cells are greyed out. Layout adapts to the number of categories and
 // the tallest column.
-export function Board({ game, done, onCellClick }: BoardProps) {
+export function Board({ game, done, activeKey, onCellClick }: BoardProps) {
   const cols = game.categories.length;
   const rows = Math.max(...game.categories.map((c) => c.cells.length));
   const interactive = Boolean(onCellClick);
@@ -35,17 +37,20 @@ export function Board({ game, done, onCellClick }: BoardProps) {
           if (!cell) {
             return <div key={cellKey(ci, ri)} />;
           }
-          const isDone = done.has(cellKey(ci, ri));
+          const key = cellKey(ci, ri);
+          const isDone = done.has(key);
+          const isActive = !isDone && key === activeKey;
           const color = columnColor(ci);
           const style = isDone
             ? undefined
             : { background: color.bg, color: color.fg };
+          const className = `cell${isDone ? " done" : ""}${isActive ? " active" : ""}`;
 
           if (interactive) {
             return (
               <button
-                key={cellKey(ci, ri)}
-                className={`cell${isDone ? " done" : ""}`}
+                key={key}
+                className={className}
                 style={style}
                 disabled={isDone}
                 onClick={() => onCellClick?.(ci, ri)}
@@ -55,11 +60,7 @@ export function Board({ game, done, onCellClick }: BoardProps) {
             );
           }
           return (
-            <div
-              key={cellKey(ci, ri)}
-              className={`cell${isDone ? " done" : ""}`}
-              style={style}
-            >
+            <div key={key} className={className} style={style}>
               {cell.points}
             </div>
           );

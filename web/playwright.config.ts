@@ -5,7 +5,10 @@ import { defineConfig, devices } from "@playwright/test";
 // headless browser. No unit tests — these cover the actual user flows.
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  // Game state lives on the server and is shared across all screens, so tests
+  // run serially and reset the board in beforeEach to stay isolated.
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: "list",

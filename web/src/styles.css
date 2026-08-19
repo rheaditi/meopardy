@@ -161,6 +161,22 @@ button.cell:active:not(.done) {
   box-shadow: none;
 }
 
+/* The cell currently in play, highlighted on every screen. */
+.cell.active {
+  outline: 4px solid var(--text);
+  outline-offset: -4px;
+  animation: cell-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes cell-pulse {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.22);
+  }
+}
+
 /* ---- Status / loading ---- */
 .center-msg {
   flex: 1;
@@ -277,5 +293,26 @@ button.cell:active:not(.done) {
   border: 1px dashed var(--border);
   color: var(--text-muted);
   font-size: 13px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notice-btn {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.notice-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
