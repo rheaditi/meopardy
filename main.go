@@ -24,6 +24,7 @@ var distFS embed.FS
 func main() {
 	addr := flag.String("addr", ":8080", "address to listen on")
 	gamePath := flag.String("game", "games/sample.json", "path to the game JSON file")
+	statePath := flag.String("state", "meopardy-state.json", "path to persist live game state (empty to disable)")
 	dev := flag.Bool("dev", false, "dev mode: don't serve the embedded frontend (use the Vite dev server)")
 	flag.Parse()
 
@@ -42,7 +43,7 @@ func main() {
 		assets = sub
 	}
 
-	srv := server.New(g, assets)
+	srv := server.New(g, assets, *statePath)
 
 	if host := os.Getenv("MEOPARDY_HOST"); host != "" {
 		log.Printf("hint: on your network, players can reach the big screen at http://%s%s/", host, *addr)

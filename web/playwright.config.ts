@@ -20,7 +20,8 @@ export default defineConfig({
   webServer: {
     // Serve a dedicated test fixture, not the real games/ files, so the suite
     // is independent of actual game content.
-    command: "npm run build && cd .. && go run . -addr :8080 -game web/e2e/fixtures/game.json",
+    command:
+      'npm run build && cd .. && go run . -addr :8080 -game web/e2e/fixtures/game.json -state ""',
     url: "http://localhost:8080/api/health",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

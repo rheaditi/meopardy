@@ -53,6 +53,11 @@ the server. The resulting `./meopardy` binary is fully self-contained — copy i
 ./meopardy -game games/sample.json -addr :8080
 ```
 
+Live progress (scores, answered cells) is saved to `meopardy-state.json` and
+resumed automatically on the next start, so a restart won't lose an in-progress
+game. Use `-state path.json` to change the file, or `-state ""` to disable it.
+Deleting the file (or hitting Reset in the moderator) starts fresh.
+
 ## Development
 
 Two terminals for hot-reload:
@@ -117,11 +122,14 @@ moderator for awarding points and scorekeeping.
       moderator awards a cell's points to one player (or closes with no winner),
       with a repeatable undo. Scores show on the moderator. (Kept simple — no
       deduct-on-wrong mode.)
+- [x] **Persistence**: live state (scores, answered cells, open/revealed) is
+      saved to a JSON file (`-state`, default `meopardy-state.json`) on every
+      change and resumed on startup, so a restart or crash mid-game doesn't lose
+      the (hidden) scores.
+- ~~Players + scores on the big screen~~ — intentionally skipped: scores stay on
+  the moderator so the standings are a surprise.
 - [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
       shared passkey.
-- [ ] **Players + scores on the big screen**: a scoreboard that uses the screen
-      real estate well.
-- [ ] **Phase 4 — Setup + persistence**: start screen (pick game, add players,
-      choose scoring mode), auto-save state to disk, resume after a crash.
-- [ ] **Phase 5 — Polish**: reset/undo history, final scoreboard, sounds,
-      animations, game editing.
+- [ ] **TV-hardening**: older LG/smart-TV browser support (build target,
+      aspect-ratio fallback, QR-code join).
+- [ ] **Polish**: winner-reveal finale, sounds, animations, game editing.

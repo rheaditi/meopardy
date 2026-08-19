@@ -34,20 +34,18 @@ type GameState struct {
 // It keeps an undo stack so the moderator can walk back mistakes. Safe for
 // concurrent use.
 type hub struct {
-	mu    sync.Mutex
-	state GameState
-	undo  []GameState
-	subs  map[chan []byte]struct{}
+	mu      sync.Mutex
+	state   GameState
+	undo    []GameState
+	subs    map[chan []byte]struct{}
+	persist func(GameState) // optional; called with a snapshot after each change
 }
 
-func newHub(players []string) *hub {
-	scores := make(map[string]int, len(players))
-	for _, p := range players {
-		scores[p] = 0
-	}
+func newHub(initial GameState, persist func(GameState)) *hub {
 	return &hub{
-		state: GameState{Done: map[string]bool{}, Scores: scores},
-		subs:  map[chan []byte]struct{}{},
+		state:   initial,
+		subs:    map[chan []byte]struct{}{},
+		persist: persist,
 	}
 }
 
@@ -78,29 +76,42 @@ func (h *hub) snapshot() GameState {
 	return clone(h.state)
 }
 
-// mutate records the current state on the undo stack, applies fn, then
-// broadcasts. Every mutation is therefore undoable.
+// mutate records the current state on the undo stack, applies fn, broadcasts,
+// and persists. Every mutation is therefore undoable and saved.
 func (h *hub) mutate(fn func(*GameState)) {
 	h.mu.Lock()
-	defer h.mu.Unlock()
 	h.undo = append(h.undo, clone(h.state))
 	if len(h.undo) > maxUndo {
 		h.undo = h.undo[len(h.undo)-maxUndo:]
 	}
 	fn(&h.state)
+	snap := clone(h.state)
 	h.broadcastLocked()
+	h.mu.Unlock()
+	h.savePersist(snap)
 }
 
 // undoLast reverts the most recent mutation. Repeatable until the stack empties.
 func (h *hub) undoLast() {
 	h.mu.Lock()
-	defer h.mu.Unlock()
 	if len(h.undo) == 0 {
+		h.mu.Unlock()
 		return
 	}
 	h.state = h.undo[len(h.undo)-1]
 	h.undo = h.undo[:len(h.undo)-1]
+	snap := clone(h.state)
 	h.broadcastLocked()
+	h.mu.Unlock()
+	h.savePersist(snap)
+}
+
+// savePersist writes a snapshot to disk outside the lock so file IO never
+// blocks other requests.
+func (h *hub) savePersist(snap GameState) {
+	if h.persist != nil {
+		h.persist(snap)
+	}
 }
 
 func (h *hub) broadcastLocked() {

@@ -28,10 +28,61 @@ type Server struct {
 
 // New builds a Server. assets is the built frontend filesystem (embedded in
 // production, or nil during development when Vite serves the UI itself).
-func New(g *game.Game, assets fs.FS) *Server {
-	s := &Server{game: g, hub: newHub(g.Players), assets: assets, mux: http.NewServeMux()}
+// statePath, when non-empty, is a JSON file the live game state is saved to and
+// resumed from across restarts.
+func New(g *game.Game, assets fs.FS, statePath string) *Server {
+	s := &Server{game: g, assets: assets, mux: http.NewServeMux()}
+
+	initial := s.freshState()
+	var persist func(GameState)
+	if statePath != "" {
+		store := &stateStore{path: statePath}
+		if saved, ok := store.load(); ok {
+			initial = s.reconcile(saved)
+			log.Printf("resumed saved game state from %s", statePath)
+		}
+		persist = func(gs GameState) {
+			if err := store.save(gs); err != nil {
+				log.Printf("save state: %v", err)
+			}
+		}
+	}
+
+	s.hub = newHub(initial, persist)
 	s.routes()
 	return s
+}
+
+// freshState is a new game: no answered cells, every player at zero.
+func (s *Server) freshState() GameState {
+	scores := make(map[string]int, len(s.game.Players))
+	for _, p := range s.game.Players {
+		scores[p] = 0
+	}
+	return GameState{Done: map[string]bool{}, Scores: scores}
+}
+
+// reconcile merges a saved state onto a fresh one for the current game, so a
+// changed board/roster can't produce phantom players or an open cell that no
+// longer exists.
+func (s *Server) reconcile(saved GameState) GameState {
+	st := s.freshState()
+	for _, p := range s.game.Players {
+		if v, ok := saved.Scores[p]; ok {
+			st.Scores[p] = v
+		}
+	}
+	for k, done := range saved.Done {
+		if done {
+			st.Done[k] = true
+		}
+	}
+	if saved.OpenCell != nil && s.validCell(saved.OpenCell.Category, saved.OpenCell.Row) {
+		c := *saved.OpenCell
+		st.OpenCell = &c
+		st.Revealed = saved.Revealed
+	}
+	return st
 }
 
 func (s *Server) routes() {

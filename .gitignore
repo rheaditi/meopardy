@@ -145,6 +145,10 @@ vite.config.ts.timestamp-*
 # Meopardy compiled binary
 /meopardy
 
+# Meopardy persisted game state
+/meopardy-state.json
+/meopardy-state.json.tmp
+
 # Playwright e2e artifacts
 web/test-results/
 web/playwright-report/
