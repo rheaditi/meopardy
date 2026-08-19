@@ -1,5 +1,6 @@
 {
   "title": "Friday Night Meopardy",
+  "players": ["Alex", "Sam", "Jo"],
   "categories": [
     {
       "name": "Because Seven, Eight, Nine",

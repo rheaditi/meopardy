@@ -29,7 +29,7 @@ for (const transport of ["poll", "ws"] as const) {
       await expect(screen.locator(".cell.active")).toHaveText("50");
 
       // Moderator closes the cell -> big screen greys it and clears the highlight.
-      await mod.getByRole("dialog").getByRole("button", { name: "Close cell" }).click();
+      await mod.getByRole("dialog").getByRole("button", { name: "Close — no winner" }).click();
       await expect(screen.locator(".cell.active")).toHaveCount(0);
       await expect(screen.locator(".cell.done")).toHaveCount(1);
       await expect(screen.locator(".cell.done")).toHaveText("50");
@@ -48,7 +48,7 @@ for (const transport of ["poll", "ws"] as const) {
       await mod.goto(`/moderator${q}`);
 
       await mod.getByRole("button", { name: "50", exact: true }).first().click();
-      await mod.getByRole("dialog").getByRole("button", { name: "Close cell" }).click();
+      await mod.getByRole("dialog").getByRole("button", { name: "Close — no winner" }).click();
       await expect(screen.locator(".cell.done")).toHaveCount(1);
 
       await resetBoard(request);

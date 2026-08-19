@@ -3,21 +3,25 @@ import type { Cell } from "../types";
 interface CellModalProps {
   categoryName: string;
   cell: Cell;
+  players: string[];
   revealed: boolean;
   onToggleReveal: () => void;
+  onAward: (player: string) => void;
   onClose: () => void;
   onCloseCell: () => void;
 }
 
 // CellModal is the moderator's view of an open cell: it reveals the prompt plus
 // the answer and hint (which the big screen never shows). The moderator reads
-// the question aloud, then taps "Show question on big screen" so players can
-// read it. Awarding points to players arrives in Phase 3.
+// the question aloud, taps "Show question on big screen" so players can read it,
+// then awards the points to whoever got it right — or closes with no winner.
 export function CellModal({
   categoryName,
   cell,
+  players,
   revealed,
   onToggleReveal,
+  onAward,
   onClose,
   onCloseCell,
 }: CellModalProps) {
@@ -48,12 +52,25 @@ export function CellModal({
           {revealed ? "Hide question from big screen" : "Show question on big screen"}
         </button>
 
+        {players.length > 0 && (
+          <div className="award">
+            <div className="field-label">Award {cell.points} points to</div>
+            <div className="award-players">
+              {players.map((p) => (
+                <button key={p} className="btn award-btn" onClick={() => onAward(p)}>
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="modal-actions">
           <button className="btn" onClick={onClose}>
             Back
           </button>
-          <button className="btn primary" onClick={onCloseCell}>
-            Close cell
+          <button className="btn" onClick={onCloseCell}>
+            Close — no winner
           </button>
         </div>
       </div>

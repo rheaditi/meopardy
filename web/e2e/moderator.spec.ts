@@ -25,7 +25,7 @@ test.describe("moderator", () => {
     await expect(dialog.locator(".field.answer")).toContainText("Seven");
 
     // Close the cell: modal disappears and the cell is now disabled (done).
-    await dialog.getByRole("button", { name: "Close cell" }).click();
+    await dialog.getByRole("button", { name: "Close — no winner" }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(firstCell).toBeDisabled();
   });

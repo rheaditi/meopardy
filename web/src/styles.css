@@ -448,6 +448,70 @@ button.cell:active:not(.done) {
 }
 
 .notice-btn:hover {
-  border-color: var(--danger);
-  color: var(--danger);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.notice-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---- Moderator scores strip ---- */
+.scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 4px;
+}
+
+.score-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.score-name {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.score-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ---- Award players (in the cell modal) ---- */
+.award {
+  margin-bottom: 12px;
+}
+
+.award .field-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.award-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.award-btn {
+  flex: 1 1 auto;
+  background: var(--bg-success, rgba(46, 163, 106, 0.14));
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.award-btn:hover {
+  background: var(--success);
+  color: #fff;
 }

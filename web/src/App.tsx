@@ -36,18 +36,6 @@ export function App() {
             <span className="role">Moderator</span>
             <button
               className="icon-btn"
-              onClick={toggleTransport}
-              aria-label="Switch live-update transport"
-              title={
-                transport === "ws"
-                  ? "Live updates over WebSocket — click to use polling"
-                  : "Live updates by polling — click to use WebSocket"
-              }
-            >
-              {transport === "ws" ? "⚡ WebSocket" : "↻ Polling"}
-            </button>
-            <button
-              className="icon-btn"
               onClick={toggleTheme}
               aria-label="Toggle dark mode"
               title="Toggle dark mode"
@@ -63,7 +51,9 @@ export function App() {
       {!error &&
         game &&
         (moderator ? (
-          <ModeratorView game={game} transport={transport} />
+          // The moderator is a reliable device and self-drives, so it always
+          // uses WebSocket; the switchable transport lives on the big screen.
+          <ModeratorView game={game} transport="ws" />
         ) : (
           <PublicView
             game={game}

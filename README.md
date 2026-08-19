@@ -84,6 +84,7 @@ classic "answer in the form of a question" framing is optional). See
 ```json
 {
   "title": "Friday Night Meopardy",
+  "players": ["Alex", "Sam", "Jo"],
   "categories": [
     {
       "name": "History",
@@ -95,6 +96,9 @@ classic "answer in the form of a question" framing is optional). See
 }
 ```
 
+`players` is optional — list the people playing and their names appear on the
+moderator for awarding points and scorekeeping.
+
 ## Roadmap
 
 - [x] **Phase 1 — Skeleton**: Go server, Vite/React UI, JSON loader, board in
@@ -105,10 +109,14 @@ classic "answer in the form of a question" framing is optional). See
 - [x] **Reveal question**: the moderator opens a cell (seeing the answer/hint),
       reads it aloud, then reveals the question full-screen on the big screen for
       players — the answer never leaves the moderator's device.
+- [x] **Scoring**: players come from the game JSON (`"players": [...]`); the
+      moderator awards a cell's points to one player (or closes with no winner),
+      with a repeatable undo. Scores show on the moderator. (Kept simple — no
+      deduct-on-wrong mode.)
 - [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
       shared passkey.
-- [ ] **Phase 3 — Game loop**: players + scores on the big screen, award/deduct
-      per player, commit + undo, live scoreboard.
+- [ ] **Players + scores on the big screen**: a scoreboard that uses the screen
+      real estate well.
 - [ ] **Phase 4 — Setup + persistence**: start screen (pick game, add players,
       choose scoring mode), auto-save state to disk, resume after a crash.
 - [ ] **Phase 5 — Polish**: reset/undo history, final scoreboard, sounds,

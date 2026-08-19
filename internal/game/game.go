@@ -28,6 +28,7 @@ type Category struct {
 // starting state; live scores and which cells are answered live elsewhere.
 type Game struct {
 	Title      string     `json:"title"`
+	Players    []string   `json:"players,omitempty"`
 	Categories []Category `json:"categories"`
 }
 
@@ -56,6 +57,16 @@ func (g *Game) validate() error {
 	}
 	if len(g.Categories) == 0 {
 		return fmt.Errorf("game needs at least one category")
+	}
+	seen := make(map[string]bool, len(g.Players))
+	for i, p := range g.Players {
+		if p == "" {
+			return fmt.Errorf("player %d has an empty name", i+1)
+		}
+		if seen[p] {
+			return fmt.Errorf("duplicate player name %q", p)
+		}
+		seen[p] = true
 	}
 	for i, c := range g.Categories {
 		if c.Name == "" {

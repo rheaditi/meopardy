@@ -29,7 +29,7 @@ type Server struct {
 // New builds a Server. assets is the built frontend filesystem (embedded in
 // production, or nil during development when Vite serves the UI itself).
 func New(g *game.Game, assets fs.FS) *Server {
-	s := &Server{game: g, hub: newHub(), assets: assets, mux: http.NewServeMux()}
+	s := &Server{game: g, hub: newHub(g.Players), assets: assets, mux: http.NewServeMux()}
 	s.routes()
 	return s
 }
@@ -107,6 +107,7 @@ type actionRequest struct {
 	Type     string `json:"type"`
 	Category int    `json:"category"`
 	Row      int    `json:"row"`
+	Player   string `json:"player"`
 }
 
 // handleAction applies a moderator command and broadcasts the resulting state.
@@ -114,9 +115,11 @@ type actionRequest struct {
 //   - open:   put a cell in play (highlight it on the big screen)
 //   - reveal: show the open cell's question on the big screen
 //   - hide:   hide the question again (cell stays in play)
+//   - award:  give the open cell's points to a player and close the cell
 //   - cancel: take the cell out of play without marking it answered
-//   - close:  mark the open cell answered and clear it
-//   - reset:  clear the whole board
+//   - close:  mark the open cell answered and clear it (no winner)
+//   - undo:   revert the most recent action (repeatable)
+//   - reset:  clear the whole board and zero all scores
 func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 	var a actionRequest
 	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
@@ -145,6 +148,23 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 		})
 	case "hide":
 		s.hub.mutate(func(st *GameState) { st.Revealed = false })
+	case "award":
+		if !s.playerKnown(a.Player) {
+			http.Error(w, "unknown player", http.StatusBadRequest)
+			return
+		}
+		s.hub.mutate(func(st *GameState) {
+			if st.OpenCell == nil {
+				return
+			}
+			cell := s.game.Categories[st.OpenCell.Category].Cells[st.OpenCell.Row]
+			st.Scores[a.Player] += cell.Points
+			st.Done[cellKey(st.OpenCell.Category, st.OpenCell.Row)] = true
+			st.OpenCell = nil
+			st.Revealed = false
+		})
+	case "undo":
+		s.hub.undoLast()
 	case "cancel":
 		s.hub.mutate(func(st *GameState) {
 			st.OpenCell = nil
@@ -163,6 +183,9 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 			st.Done = map[string]bool{}
 			st.OpenCell = nil
 			st.Revealed = false
+			for p := range st.Scores {
+				st.Scores[p] = 0
+			}
 		})
 	default:
 		http.Error(w, "unknown action type", http.StatusBadRequest)
@@ -177,6 +200,15 @@ func (s *Server) validCell(category, row int) bool {
 		return false
 	}
 	return row >= 0 && row < len(s.game.Categories[category].Cells)
+}
+
+func (s *Server) playerKnown(name string) bool {
+	for _, p := range s.game.Players {
+		if p == name {
+			return true
+		}
+	}
+	return false
 }
 
 // cellKey builds the "category:row" key used in GameState.Done. It must match

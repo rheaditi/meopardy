@@ -14,6 +14,7 @@ export interface Category {
 
 export interface Game {
   title: string;
+  players?: string[];
   categories: Category[];
 }
 
@@ -35,6 +36,7 @@ export interface GameState {
   done: Record<string, boolean>;
   openCell: CellRef | null;
   revealed: boolean;
+  scores: Record<string, number>;
 }
 
 // doneSet converts the wire format into a Set of "category:row" keys.
