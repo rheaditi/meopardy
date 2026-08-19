@@ -87,9 +87,11 @@ func (s *Server) reconcile(saved GameState) GameState {
 
 func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/health", s.handleHealth)
+	s.mux.HandleFunc("GET /api/config", s.handleConfig)
 	s.mux.HandleFunc("GET /api/game", s.handleGame)
 	s.mux.HandleFunc("GET /api/state", s.handleState)
 	s.mux.HandleFunc("GET /api/ws", s.handleWS)
+	s.mux.HandleFunc("POST /api/moderator/auth", s.handleAuth)
 	s.mux.HandleFunc("POST /api/action", s.handleAction)
 
 	// Serve the SPA for everything else. If no assets were embedded (dev mode),
@@ -113,7 +115,34 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGame(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.game)
+	// Never send the passkey to clients.
+	g := *s.game
+	g.Passkey = ""
+	writeJSON(w, http.StatusOK, g)
+}
+
+// handleConfig tells the client whether the moderator view needs a passkey.
+func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]bool{"passkeyRequired": s.game.Passkey != ""})
+}
+
+// handleAuth validates a submitted passkey (sent in the X-Meopardy-Passkey
+// header). Used by the moderator login prompt.
+func (s *Server) handleAuth(w http.ResponseWriter, r *http.Request) {
+	if !s.checkPasskey(r) {
+		http.Error(w, "invalid passkey", http.StatusUnauthorized)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+// checkPasskey reports whether a request is allowed to drive the game. When no
+// passkey is configured, everything is allowed.
+func (s *Server) checkPasskey(r *http.Request) bool {
+	if s.game.Passkey == "" {
+		return true
+	}
+	return r.Header.Get("X-Meopardy-Passkey") == s.game.Passkey
 }
 
 func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
@@ -170,8 +199,13 @@ type actionRequest struct {
 //   - cancel: take the cell out of play without marking it answered
 //   - close:  mark the open cell answered and clear it (no winner)
 //   - undo:   revert the most recent action (repeatable)
+//   - finale/hideFinale: show/hide the end-game score reveal on the big screen
 //   - reset:  clear the whole board and zero all scores
 func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
+	if !s.checkPasskey(r) {
+		http.Error(w, "invalid passkey", http.StatusUnauthorized)
+		return
+	}
 	var a actionRequest
 	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
@@ -216,6 +250,10 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 		})
 	case "undo":
 		s.hub.undoLast()
+	case "finale":
+		s.hub.mutate(func(st *GameState) { st.ShowFinale = true })
+	case "hideFinale":
+		s.hub.mutate(func(st *GameState) { st.ShowFinale = false })
 	case "cancel":
 		s.hub.mutate(func(st *GameState) {
 			st.OpenCell = nil
@@ -234,6 +272,7 @@ func (s *Server) handleAction(w http.ResponseWriter, r *http.Request) {
 			st.Done = map[string]bool{}
 			st.OpenCell = nil
 			st.Revealed = false
+			st.ShowFinale = false
 			for p := range st.Scores {
 				st.Scores[p] = 0
 			}

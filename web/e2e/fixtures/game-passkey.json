@@ -1,0 +1,11 @@
+{
+  "title": "Passkey Board",
+  "passkey": "letmein",
+  "players": ["Ada"],
+  "categories": [
+    {
+      "name": "Alpha",
+      "cells": [{ "points": 100, "prompt": "Alpha one prompt", "answer": "Alpha one answer" }]
+    }
+  ]
+}

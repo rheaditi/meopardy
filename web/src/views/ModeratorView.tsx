@@ -38,6 +38,12 @@ export function ModeratorView({ game, transport }: ModeratorViewProps) {
       <div className="notice">
         <span>Live — the big screen mirrors this board in real time.</span>
         <div className="notice-actions">
+          <button
+            className="notice-btn"
+            onClick={() => run(postAction(state?.showFinale ? "hideFinale" : "finale"))}
+          >
+            {state?.showFinale ? "Hide winner" : "Reveal winner"}
+          </button>
           <button className="notice-btn" onClick={() => run(postAction("undo"))}>
             Undo
           </button>

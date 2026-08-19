@@ -4,7 +4,7 @@ import { fetchGame } from "./api";
 import { useTheme } from "./useTheme";
 import { useTransport } from "./useTransport";
 import { PublicView } from "./views/PublicView";
-import { ModeratorView } from "./views/ModeratorView";
+import { ModeratorGate } from "./views/ModeratorGate";
 
 // Simple path-based routing: /moderator is the control surface, anything else
 // is the public big-screen board. Avoids pulling in a router dependency.
@@ -51,9 +51,7 @@ export function App() {
       {!error &&
         game &&
         (moderator ? (
-          // The moderator is a reliable device and self-drives, so it always
-          // uses WebSocket; the switchable transport lives on the big screen.
-          <ModeratorView game={game} transport="ws" />
+          <ModeratorGate game={game} />
         ) : (
           <PublicView
             game={game}

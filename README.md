@@ -108,6 +108,11 @@ classic "answer in the form of a question" framing is optional). See
 `players` is optional — list the people playing and their names appear on the
 moderator for awarding points and scorekeeping.
 
+Add an optional `"passkey": "your-secret"` to require it on the moderator view
+(`/moderator` shows a prompt; players on the big screen aren't affected). It's a
+light gate for casual play, not real security, and it's kept server-side —
+never sent to any client.
+
 ## Roadmap
 
 - [x] **Phase 1 — Skeleton**: Go server, Vite/React UI, JSON loader, board in
@@ -128,8 +133,13 @@ moderator for awarding points and scorekeeping.
       the (hidden) scores.
 - ~~Players + scores on the big screen~~ — intentionally skipped: scores stay on
   the moderator so the standings are a surprise.
-- [ ] **Phase 2.5 — Moderator passkey**: gate the `/moderator` view behind a
-      shared passkey.
+- [x] **Moderator passkey**: an optional `"passkey"` in the game JSON gates the
+      moderator view (login prompt) and is enforced on the server for all
+      game-changing actions. The passkey is stripped before the game is sent to
+      any client.
+- [x] **Winner-reveal finale**: scores stay hidden on the big screen all game;
+      the moderator triggers a full-screen reveal of the final standings, top
+      scorer highlighted.
 - [ ] **TV-hardening**: older LG/smart-TV browser support (build target,
       aspect-ratio fallback, QR-code join).
-- [ ] **Polish**: winner-reveal finale, sounds, animations, game editing.
+- [ ] **Polish**: sounds, animations, game editing.

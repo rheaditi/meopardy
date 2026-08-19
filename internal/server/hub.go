@@ -28,6 +28,9 @@ type GameState struct {
 	Revealed bool `json:"revealed"`
 	// Scores maps each player name to their current score.
 	Scores map[string]int `json:"scores"`
+	// ShowFinale is true when the moderator has triggered the end-game reveal of
+	// the final scores on the big screen.
+	ShowFinale bool `json:"showFinale"`
 }
 
 // hub owns the game state and fans out changes to connected WebSocket clients.
@@ -138,7 +141,7 @@ func clone(s GameState) GameState {
 		c := *s.OpenCell
 		open = &c
 	}
-	return GameState{Done: done, OpenCell: open, Revealed: s.Revealed, Scores: scores}
+	return GameState{Done: done, OpenCell: open, Revealed: s.Revealed, Scores: scores, ShowFinale: s.ShowFinale}
 }
 
 func encode(s GameState) []byte {

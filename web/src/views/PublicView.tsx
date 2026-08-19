@@ -31,6 +31,14 @@ export function PublicView({
   const revealedCell =
     open && state?.revealed ? game.categories[open.category]?.cells[open.row] : null;
 
+  const showFinale = Boolean(state?.showFinale);
+  const players = game.players ?? [];
+  const scores = state?.scores ?? {};
+  const ranked = [...players]
+    .map((name) => ({ name, score: scores[name] ?? 0 }))
+    .sort((a, b) => b.score - a.score);
+  const topScore = ranked.length ? ranked[0].score : 0;
+
   return (
     <div className="stage">
       <div className="stage-inner">
@@ -38,13 +46,32 @@ export function PublicView({
         <Board game={game} done={done} activeKey={activeKey} fill />
       </div>
 
-      {revealedCell && open && (
-        <div className="reveal">
-          <div className="reveal-meta">
-            {game.categories[open.category].name} · {revealedCell.points}
-          </div>
-          <div className="reveal-prompt">{revealedCell.prompt}</div>
+      {showFinale ? (
+        <div className="finale">
+          <div className="finale-title">Final scores</div>
+          <ol className="finale-list">
+            {ranked.map((r, i) => (
+              <li
+                key={r.name}
+                className={`finale-row${r.score === topScore && topScore > 0 ? " winner" : ""}`}
+              >
+                <span className="finale-rank">{i + 1}</span>
+                <span className="finale-name">{r.name}</span>
+                <span className="finale-score">{r.score}</span>
+              </li>
+            ))}
+          </ol>
         </div>
+      ) : (
+        revealedCell &&
+        open && (
+          <div className="reveal">
+            <div className="reveal-meta">
+              {game.categories[open.category].name} · {revealedCell.points}
+            </div>
+            <div className="reveal-prompt">{revealedCell.prompt}</div>
+          </div>
+        )
       )}
 
       <div className="dock" role="group" aria-label="Display controls">

@@ -17,13 +17,22 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
-  webServer: {
-    // Serve a dedicated test fixture, not the real games/ files, so the suite
-    // is independent of actual game content.
-    command:
-      'npm run build && cd .. && go run . -addr :8080 -game web/e2e/fixtures/game.json -state ""',
-    url: "http://localhost:8080/api/health",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  // The frontend is built by the test:e2e script before Playwright starts, so
+  // these commands just run the Go server (which embeds the freshly-built UI).
+  // Two servers: the main fixture (no passkey) on :8080, and a passkey-protected
+  // fixture on :8081 for the passkey spec — keeping the other specs simple.
+  webServer: [
+    {
+      command: 'cd .. && go run . -addr :8080 -game web/e2e/fixtures/game.json -state ""',
+      url: "http://localhost:8080/api/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    {
+      command: 'cd .. && go run . -addr :8081 -game web/e2e/fixtures/game-passkey.json -state ""',
+      url: "http://localhost:8081/api/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });

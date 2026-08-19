@@ -196,9 +196,127 @@ body {
   max-width: 92%;
 }
 
-/* Keep the dock clickable above the reveal overlay. */
+/* Keep the dock clickable above overlays. */
 .dock {
   z-index: 6;
+}
+
+/* The end-game finale: final scores revealed on the big screen. */
+.finale {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 6vmin;
+  background: var(--bg);
+}
+
+.finale-title {
+  font-size: clamp(20px, 3.4vmin, 44px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.finale-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(80%, 700px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+
+.finale-row {
+  display: flex;
+  align-items: center;
+  gap: 3vmin;
+  padding: 1.4vh 3vmin;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  font-size: clamp(20px, 3.4vmin, 44px);
+}
+
+.finale-row.winner {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.finale-rank {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+}
+
+.finale-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.finale-score {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Moderator passkey gate ---- */
+.gate {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gate-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.gate-sub {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.gate-input {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.gate-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.gate-error {
+  color: var(--danger);
+  font-size: 13px;
 }
 
 /* ---- Board ---- */

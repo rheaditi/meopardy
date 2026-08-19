@@ -27,7 +27,10 @@ type Category struct {
 // Game is a full board definition loaded from a JSON file. This is the static
 // starting state; live scores and which cells are answered live elsewhere.
 type Game struct {
-	Title      string     `json:"title"`
+	Title string `json:"title"`
+	// Passkey, if set, gates the moderator view. It lives only on the server —
+	// it is stripped before the game is sent to any client.
+	Passkey    string     `json:"passkey,omitempty"`
 	Players    []string   `json:"players,omitempty"`
 	Categories []Category `json:"categories"`
 }

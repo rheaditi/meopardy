@@ -37,6 +37,7 @@ export interface GameState {
   openCell: CellRef | null;
   revealed: boolean;
   scores: Record<string, number>;
+  showFinale: boolean;
 }
 
 // doneSet converts the wire format into a Set of "category:row" keys.
