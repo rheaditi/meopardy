@@ -1,0 +1,88 @@
+{
+  "title": "Are you smarter than a fifth grader?",
+  "passkey": "",
+  "players": ["Player 1", "Player 2", "Player 3", "Player 4"],
+  "categories": [
+    {
+      "name": "Because Seven, Eight, Nine",
+      "description": "Basic math",
+      "cells": [
+        { "points": 50, "prompt": "Numbers greater than 1 that can't be divided evenly by any other numbers except 1 and themselves are called...", "answer": "Prime Numbers" },
+        { "points": 100, "prompt": "If a car is travelling at 60km/hr how long would it take to go 240km?", "answer": "4 hours", "hint": "distance = speed * time" },
+        { "points": 150, "prompt": "What is the value of the roman numeral MMXXVI...", "answer": "2026" },
+        { "points": 200, "prompt": "1/3 and 1/8 have the lowest common denominator of...", "answer": "24" }
+      ]
+    },
+    {
+      "name": "From A to Z",
+      "description": "English",
+      "cells": [
+        { "points": 50, "prompt": "\"Your smile is like a sunrise on a cloudy day\" is an example of what literary device?", "answer": "Simile / Metaphor", "hint": "a comparison without using like or as" },
+        { "points": 100, "prompt": "The words ballet, café and silhouette were borrowed into English from this European language.", "answer": "French" },
+        { "points": 150, "prompt": "This literary device uses words that mimic the natural sounds they describe, like \"buzz\", \"meow\" or \"hiss.\"", "answer": "Onomatopoeia" },
+        { "points": 200, "prompt": "Words that have the same pronunciation but have a different meaning are called...", "answer": "Homophones" }
+      ]
+    },
+    {
+      "name": "Test Tubes",
+      "description": "Science",
+      "cells": [
+        { "points": 50, "prompt": "This gas giant is the largest planet in our solar system.", "answer": "Jupiter" },
+        { "points": 100, "prompt": "Solids, liquids and gases that cannot be broken down further are categorized as...", "answer": "Elements", "hint": "" },
+        { "points": 150, "prompt": "How is igneous rock created?", "answer": "Molten lava or magma which cools & solidifies into rock" },
+        { "points": 200, "prompt": "This is the green part of a plant cell where photosynthesis takes place, using energy from the sun to make food...", "answer": "Chloroplast", "hint": "the part of the plant and not the pigment" }
+      ]
+    },
+    {
+      "name": "History",
+      "description": "History",
+      "cells": [
+        { "points": 50, "prompt": "This deadly disease swept across Europe and Asia in the 1300s, wiping out a huge part of the population.", "answer": "Black Death or Bubonic Plague", "hint": "it spread by fleas on rats" },
+        { "points": 100, "prompt": "This region in Western Asia is considered one of the earliest civilizations...", "answer": "Mesopotamia" },
+        { "points": 150, "prompt": "What is the name of the largest Egyptian pyramid?", "answer": "The Great Pyramid of Giza", "hint": "named after the place" },
+        { "points": 200, "prompt": "This massive global conflict lasted from 1939 to 1945 and involved the Axis and Allied powers.", "answer": "World War II" }
+      ]
+    },
+    {
+      "name": "Map Attack",
+      "description": "Geography",
+      "cells": [
+        { "points": 50, "prompt": "What is the capital of Canada?", "answer": "Ottawa" },
+        { "points": 100, "prompt": "The line that divides the earth into the eastern hemisphere and the western hemisphere is called...", "answer": "Prime Meridian", "hint": "AM / PM" },
+        { "points": 150, "prompt": "The Matterhorn is part of which real mountain range?", "answer": "The Alps", "hint": "It means snow capped mountains" },
+        { "points": 200, "prompt": "The area where a freshwater stream empties into a saltwater ocean is called...", "answer": "Estuary", "hint": "It is a mix of fresh and salt water" }
+      ]
+    }
+  ],
+  "finalRound": {
+    "points": 150,  
+    "timerSeconds": 60,
+    "description": "The Final Exam",
+    "questions": [
+      {
+        "prompt": "The female of what animal species is called an ewe?",
+        "answer": "Sheep"
+      },
+      {
+        "prompt": "True or false? Light is the only thing that can escape a black hole.",
+        "answer": "False"
+      },
+      {
+        "prompt": "Write the value of Pi to the most number of decimal places",
+        "answer": "3.14159265359"
+      },
+      {
+        "prompt": "What is the freezing point of water in degrees Fahrenheit?",
+        "answer": "32 degrees Fahrenheit"
+      },
+      {
+        "prompt": "How many bones are in the human body?",
+        "answer": "206"
+      },
+      {
+        "prompt": "In which country did the first Olympic Games take place?",
+        "answer": "Greece"
+      }
+    ]
+  }
+}
