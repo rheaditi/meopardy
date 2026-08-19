@@ -1,6 +1,9 @@
 package server
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+)
 
 // CellRef identifies a cell by its category (column) and row indices.
 type CellRef struct {
@@ -19,15 +22,40 @@ type GameState struct {
 	OpenCell *CellRef `json:"openCell"`
 }
 
-// hub owns the game state. Screens read it by polling GET /api/state; the
-// moderator changes it via POST /api/action. It is safe for concurrent use.
+// hub owns the game state and fans out changes to connected WebSocket clients.
+// The moderator changes state via POST /api/action; the hub then pushes the new
+// state to every open socket. It is safe for concurrent use.
 type hub struct {
 	mu    sync.Mutex
 	state GameState
+	subs  map[chan []byte]struct{}
 }
 
 func newHub() *hub {
-	return &hub{state: GameState{Done: map[string]bool{}}}
+	return &hub{
+		state: GameState{Done: map[string]bool{}},
+		subs:  map[chan []byte]struct{}{},
+	}
+}
+
+// subscribe registers a client and immediately queues the current state so a
+// freshly-connected screen renders without waiting for the next change.
+func (h *hub) subscribe() chan []byte {
+	ch := make(chan []byte, 8)
+	h.mu.Lock()
+	h.subs[ch] = struct{}{}
+	ch <- encode(h.state) // buffered + fresh channel: never blocks
+	h.mu.Unlock()
+	return ch
+}
+
+func (h *hub) unsubscribe(ch chan []byte) {
+	h.mu.Lock()
+	if _, ok := h.subs[ch]; ok {
+		delete(h.subs, ch)
+		close(ch)
+	}
+	h.mu.Unlock()
 }
 
 // snapshot returns a deep copy of the current state.
@@ -37,11 +65,20 @@ func (h *hub) snapshot() GameState {
 	return clone(h.state)
 }
 
-// mutate applies fn to the state under lock.
+// mutate applies fn to the state under lock, then broadcasts the new state to
+// every subscriber. Slow subscribers that can't keep up are skipped for this
+// update; they'll receive the next one (updates are whole-state snapshots).
 func (h *hub) mutate(fn func(*GameState)) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	fn(&h.state)
+	msg := encode(h.state)
+	for ch := range h.subs {
+		select {
+		case ch <- msg:
+		default:
+		}
+	}
 }
 
 func clone(s GameState) GameState {
@@ -55,4 +92,9 @@ func clone(s GameState) GameState {
 		open = &c
 	}
 	return GameState{Done: done, OpenCell: open}
+}
+
+func encode(s GameState) []byte {
+	b, _ := json.Marshal(clone(s))
+	return b
 }

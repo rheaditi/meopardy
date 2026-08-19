@@ -11,7 +11,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:8080",
+      // ws: true so the /api/ws WebSocket is proxied to the Go server in dev.
+      "/api": { target: "http://localhost:8080", ws: true },
     },
   },
 });

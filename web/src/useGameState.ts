@@ -1,55 +1,49 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { GameState } from "./types";
 
-// How often screens poll the server for the latest state. A short poll (rather
-// than a long-lived stream) is deliberately chosen for robustness on smart-TV
-// browsers, which often buffer or silently drop persistent connections.
-const POLL_MS = 1500;
+// How long to wait before reconnecting after the socket drops. Unlike
+// EventSource, a raw WebSocket does not reconnect itself, so we do it.
+const RECONNECT_MS = 1000;
 
-// useGameState polls the server's game state on an interval and returns it,
-// along with an `apply` function to update it optimistically.
+// useGameState subscribes to the server's live game state over a WebSocket
+// (GET /api/ws) and returns it, plus an `apply` function for optimistic updates.
 //
-// The big screen just reads `state` (a ~1.5s lag is invisible there). The
-// moderator, who is actively driving, calls `apply` with the state returned by
-// an action so their own screen updates instantly instead of waiting for the
-// next poll; the poll then reconciles in the background.
+// The big screen just reads `state`. The moderator, who is actively driving,
+// calls `apply` with the state an action returns so their own screen updates
+// immediately; the socket then delivers the authoritative state right after.
 export function useGameState(): { state: GameState | null; apply: (s: GameState) => void } {
   const [state, setState] = useState<GameState | null>(null);
-  // Bumped on every optimistic apply so an in-flight poll that started earlier
-  // can't clobber a just-applied state with a stale response.
-  const genRef = useRef(0);
-
-  const apply = useCallback((s: GameState) => {
-    genRef.current++;
-    setState(s);
-  }, []);
+  const apply = useCallback((s: GameState) => setState(s), []);
 
   useEffect(() => {
     let active = true;
-    let inFlight = false;
+    let ws: WebSocket | null = null;
+    let retry: ReturnType<typeof setTimeout> | undefined;
 
-    async function poll() {
-      if (inFlight) return; // don't stack requests on a slow network
-      inFlight = true;
-      const gen = genRef.current;
-      try {
-        const res = await fetch("/api/state");
-        if (res.ok) {
-          const next = (await res.json()) as GameState;
-          if (active && genRef.current === gen) setState(next);
+    function connect() {
+      if (!active) return;
+      const proto = location.protocol === "https:" ? "wss" : "ws";
+      ws = new WebSocket(`${proto}://${location.host}/api/ws`);
+
+      ws.onmessage = (e) => {
+        if (!active) return;
+        try {
+          setState(JSON.parse(e.data) as GameState);
+        } catch {
+          // ignore malformed frames
         }
-      } catch {
-        // keep the last known state; try again next tick
-      } finally {
-        inFlight = false;
-      }
+      };
+      ws.onclose = () => {
+        if (active) retry = setTimeout(connect, RECONNECT_MS);
+      };
+      ws.onerror = () => ws?.close();
     }
 
-    poll(); // fetch immediately so the board isn't blank while we wait
-    const id = setInterval(poll, POLL_MS);
+    connect();
     return () => {
       active = false;
-      clearInterval(id);
+      if (retry) clearTimeout(retry);
+      ws?.close();
     };
   }, []);
 

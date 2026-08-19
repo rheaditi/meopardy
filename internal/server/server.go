@@ -1,9 +1,9 @@
 // Package server wires up the Meopardy HTTP API and serves the built frontend.
 //
-// The server holds the authoritative game state. Screens read it by polling
-// GET /api/state on a short interval (robust on smart-TV browsers), and the
-// moderator drives the game with POST /api/action. The moderator passkey and
-// disk persistence come in later phases.
+// The server holds the authoritative game state. Screens receive it live over a
+// WebSocket (GET /api/ws) — a one-shot GET /api/state is also available as a
+// fallback — and the moderator drives the game with POST /api/action. The
+// moderator passkey and disk persistence come in later phases.
 package server
 
 import (
@@ -12,6 +12,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/coder/websocket"
 
 	"meopardy/internal/game"
 )
@@ -36,6 +38,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/health", s.handleHealth)
 	s.mux.HandleFunc("GET /api/game", s.handleGame)
 	s.mux.HandleFunc("GET /api/state", s.handleState)
+	s.mux.HandleFunc("GET /api/ws", s.handleWS)
 	s.mux.HandleFunc("POST /api/action", s.handleAction)
 
 	// Serve the SPA for everything else. If no assets were embedded (dev mode),
@@ -64,6 +67,39 @@ func (s *Server) handleGame(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleState(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, s.hub.snapshot())
+}
+
+// handleWS streams live game state to a screen over a WebSocket. The server
+// only ever pushes (screens send nothing), so we use CloseRead to let the
+// library handle incoming control frames and signal disconnects.
+func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
+	c, err := websocket.Accept(w, r, &websocket.AcceptOptions{
+		// LAN play reaches the server by IP and by <name>.local, so accept any
+		// origin rather than fighting host/origin mismatches.
+		OriginPatterns: []string{"*"},
+	})
+	if err != nil {
+		return
+	}
+	defer c.CloseNow()
+
+	ctx := c.CloseRead(r.Context())
+	ch := s.hub.subscribe()
+	defer s.hub.unsubscribe(ch)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case msg, ok := <-ch:
+			if !ok {
+				return
+			}
+			if err := c.Write(ctx, websocket.MessageText, msg); err != nil {
+				return
+			}
+		}
+	}
 }
 
 // actionRequest is the moderator's command to change game state.
